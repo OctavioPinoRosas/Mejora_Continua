@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Mejora Continua GIMTRAC</title>
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts -->
@@ -17,11 +18,12 @@
                 extend: {
                     colors: {
                         gimtrac: {
-                            green: '#00873D',
-                            lightgreen: '#00A850',
-                            darkgreen: '#005826',
+                            green: '#2E7D32',
+                            lightgreen: '#388E3C',
+                            darkgreen: '#1B5E20',
+                            accent: '#4CAF50',
                             softbg: '#F4F7F5',
-                            dark: '#1E293B'
+                            dark: '#0F172A'
                         }
                     },
                     fontFamily: {
@@ -41,10 +43,10 @@
 
         /* Phone frame simulation styles */
         .phone-container {
-            width: 375px;
-            height: 750px;
-            border-radius: 45px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35), 0 0 0 12px #1E293B;
+            width: 380px;
+            height: 760px;
+            border-radius: 48px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 12px #0F172A;
             position: relative;
             overflow: hidden;
             background-color: #FFFFFF;
@@ -58,9 +60,9 @@
             transform: translateX(-50%);
             width: 140px;
             height: 25px;
-            background-color: #1E293B;
-            border-bottom-left-radius: 16px;
-            border-bottom-right-radius: 16px;
+            background-color: #0F172A;
+            border-bottom-left-radius: 18px;
+            border-bottom-right-radius: 18px;
             z-index: 50;
             display: flex;
             align-items: center;
@@ -77,28 +79,28 @@
         .phone-camera {
             width: 10px;
             height: 10px;
-            background-color: #0F172A;
+            background-color: #020617;
             border-radius: 50%;
             margin-left: 10px;
         }
 
-        /* Custom scrollbar for inner views */
+        /* Custom scrollbar */
         .custom-scroll::-webkit-scrollbar {
             width: 4px;
         }
         .custom-scroll::-webkit-scrollbar-track {
-            background: #f1f1f1;
+            background: #F1F5F9;
         }
         .custom-scroll::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
+            background: #CBD5E1;
             border-radius: 4px;
         }
 
         .watermark {
             background-image: repeating-linear-gradient(
                 -45deg,
-                rgba(0, 135, 61, 0.03),
-                rgba(0, 135, 61, 0.03) 20px,
+                rgba(46, 125, 50, 0.03),
+                rgba(46, 125, 50, 0.03) 20px,
                 transparent 20px,
                 transparent 40px
             );
@@ -109,9 +111,9 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) rotate(-30deg);
-            font-size: 4rem;
+            font-size: 3.8rem;
             font-weight: 900;
-            color: rgba(0, 135, 61, 0.04);
+            color: rgba(46, 125, 50, 0.04);
             pointer-events: none;
             white-space: nowrap;
         }
@@ -119,10 +121,9 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between items-center bg-slate-200 p-2 sm:p-6">
 
-    <!-- Control Header -->
     <header class="w-full max-w-5xl bg-white rounded-2xl shadow-md p-4 mb-4 flex flex-col md:flex-row justify-between items-center gap-4">
         <div class="flex items-center gap-3">
-            <div class="bg-gimtrac-green text-white p-2.5 rounded-xl text-xl font-black">
+            <div class="bg-gimtrac-green text-white px-3 py-2 rounded-xl text-xl font-black tracking-wider">
                 GIMTRAC
             </div>
             <div>
@@ -138,7 +139,7 @@
             </button>
             <button onclick="openFormUrlModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl border border-slate-300 flex items-center gap-2 transition" title="Configurar Enlaces de Google Forms">
                 <i class="fa-solid fa-link text-gimtrac-green"></i>
-                <span>URLs Google Forms</span>
+                <span>Configurar Forms</span>
             </button>
             <button onclick="resetDemoData()" class="bg-rose-50 hover:bg-rose-100 text-rose-600 px-3 py-2 rounded-xl border border-rose-200 flex items-center gap-1.5 transition">
                 <i class="fa-solid fa-rotate-right"></i>
@@ -147,13 +148,12 @@
         </div>
     </header>
 
-    <!-- Main Display View Container -->
     <main id="main-container" class="flex-1 flex justify-center items-center w-full my-auto py-2">
         
-        <!-- Phone Simulator Container -->
+        <!-- Phone Simulator Frame -->
         <div id="phone-frame" class="phone-container flex flex-col relative">
             
-            <!-- Phone Notch -->
+            <!-- Phone Top Notch -->
             <div class="phone-notch">
                 <div class="phone-speaker"></div>
                 <div class="phone-camera"></div>
@@ -171,7 +171,7 @@
 
             <!-- Internal Dynamic Viewport -->
             <div id="screen-viewport" class="flex-1 overflow-y-auto custom-scroll relative flex flex-col bg-slate-50">
-                <!-- Content will be dynamically populated here via JavaScript -->
+                <!-- Dynamic Content via JavaScript -->
             </div>
 
             <!-- Bottom Indicator Line for Mobile Simulator -->
@@ -182,25 +182,24 @@
         </div>
     </main>
 
-    <!-- MODAL 1: Configure Google Forms URLs -->
     <div id="modal-url-config" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl relative animate-in fade-in zoom-in duration-200">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
             <button onclick="closeModal('modal-url-config')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-2">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
             <div class="flex items-center gap-3 mb-4 text-gimtrac-green">
                 <i class="fa-brands fa-google-drive text-2xl"></i>
-                <h3 class="font-bold text-slate-800 text-lg">Configurar Google Forms</h3>
+                <h3 class="font-bold text-slate-800 text-lg">Enlaces de Google Forms</h3>
             </div>
-            <p class="text-xs text-slate-500 mb-4">Ingresa o pega los enlaces directos de tus formularios creados en Google Forms para conectar la acción "Enviar sugerencia".</p>
+            <p class="text-xs text-slate-500 mb-4">Ingresa o edita los enlaces directos de tus cuestionarios creados en Google Forms.</p>
             
             <div class="space-y-4 text-sm">
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Link Encuesta Cliente:</label>
+                    <label class="block text-xs font-bold text-slate-700 mb-1"><i class="fa-solid fa-user text-gimtrac-green mr-1"></i> Link Encuesta Cliente:</label>
                     <input type="url" id="url-cliente-input" placeholder="https://forms.google.com/..." class="w-full border border-slate-300 rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-gimtrac-green focus:outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Link Encuesta Colaborador:</label>
+                    <label class="block text-xs font-bold text-slate-700 mb-1"><i class="fa-solid fa-hard-hat text-gimtrac-green mr-1"></i> Link Encuesta Colaborador:</label>
                     <input type="url" id="url-colaborador-input" placeholder="https://forms.google.com/..." class="w-full border border-slate-300 rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-gimtrac-green focus:outline-none">
                 </div>
             </div>
@@ -212,7 +211,6 @@
         </div>
     </div>
 
-    <!-- MODAL 2: Consultar Estado por Folio -->
     <div id="modal-consulta-folio" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
             <button onclick="closeModal('modal-consulta-folio')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-2">
@@ -225,7 +223,7 @@
                 </div>
                 <div>
                     <h3 class="font-bold text-slate-800 text-base">Consultar Estado de Sugerencia</h3>
-                    <p class="text-[11px] text-slate-500">Ingresa el folio recibido al enviar tu propuesta</p>
+                    <p class="text-[11px] text-slate-500">Ingresa tu código de folio de seguimiento</p>
                 </div>
             </div>
 
@@ -238,7 +236,7 @@
                     </button>
                 </div>
                 <div class="mt-2 text-[11px] text-slate-400 flex justify-between items-center">
-                    <span>Ejemplos sugeridos:</span>
+                    <span>Folios de prueba:</span>
                     <div class="space-x-1">
                         <button onclick="setSearchDemo('CLI-1001')" class="underline text-gimtrac-green font-semibold hover:text-emerald-800">CLI-1001</button>,
                         <button onclick="setSearchDemo('COL-2001')" class="underline text-gimtrac-green font-semibold hover:text-emerald-800">COL-2001</button>
@@ -246,19 +244,18 @@
                 </div>
             </div>
 
-            <!-- Folio Details Output -->
+            <!-- Folio Search Result Box -->
             <div id="folio-result-container" class="hidden border border-slate-200 rounded-2xl p-4 bg-slate-50 text-xs">
-                <!-- Populated via JavaScript -->
+                <!-- Populated via JS -->
             </div>
 
             <div id="folio-not-found" class="hidden p-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-2xl text-xs text-center">
                 <i class="fa-solid fa-circle-exclamation text-xl text-amber-500 mb-1 block"></i>
-                <strong>Folio no encontrado.</strong><br>Verifica que esté bien escrito incluyendo el guion (ej. CLI-1001).
+                <strong>Folio no encontrado.</strong><br>Verifica la clave e intenta nuevamente (ej. CLI-1001).
             </div>
         </div>
     </div>
 
-    <!-- MODAL 3: Admin Status Update -->
     <div id="modal-admin-edit" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl relative">
             <button onclick="closeModal('modal-admin-edit')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-2">
@@ -307,21 +304,25 @@
     </footer>
 
     <script>
-        // State variables
-        let currentScreen = 'access'; // 'access', 'cliente', 'colaborador', 'admin'
+        // =========================================================================
+        // 📌 ENLACES DIRECTOS DE GOOGLE FORMS
+        // =========================================================================
+        let LINK_GOOGLE_FORMS_CLIENTE = "https://docs.google.com/forms/d/e/1FAIpQLScrYCjz32ZVYrlSsUa6g27kkchR9d5OJ-r_p_xSodlIPYl9GA/viewform";
+        let LINK_GOOGLE_FORMS_COLABORADOR = "https://docs.google.com/forms/coloaboradores";
+        // =========================================================================
+
+        let currentScreen = 'access'; // Options: 'access', 'cliente', 'colaborador', 'admin'
         let isPhoneView = true;
+        let isAdminLoggedIn = false;
 
-        // Default URLs for Google Forms
-        const defaultFormUrls = {
-            cliente: "https://docs.google.com/forms/d/e/1FAIpQLSc_EXAMPLE_CLIENTE/viewform",
-            colaborador: "https://docs.google.com/forms/d/e/1FAIpQLSc_EXAMPLE_COLABORADOR/viewform"
-        };
-
-        // Initialize localStorage if empty
         function initStorage() {
-            if (!localStorage.getItem('gimtrac_urls')) {
-                localStorage.setItem('gimtrac_urls', JSON.stringify(defaultFormUrls));
-            }
+            // Check or update default URLs
+            const defaultFormUrls = {
+                cliente: LINK_GOOGLE_FORMS_CLIENTE,
+                colaborador: LINK_GOOGLE_FORMS_COLABORADOR
+            };
+            localStorage.setItem('gimtrac_urls', JSON.stringify(defaultFormUrls));
+
             if (!localStorage.getItem('gimtrac_folios')) {
                 const sampleFolios = [
                     {
@@ -330,6 +331,7 @@
                         fecha: '2026-09-18',
                         sucursal: 'Puebla - Matriz',
                         categoria: 'Atención a Clientes',
+                        prioridad: 'Alta',
                         titulo: 'Digitalizar cotizaciones en sucursal para agilizar entrega de refacciones.',
                         estatus: 'En Proceso',
                         respuesta: 'El área de IT está instalando las tablets en mostradores para agilizar el proceso de cotización.',
@@ -341,6 +343,7 @@
                         fecha: '2026-09-10',
                         sucursal: 'Guadalajara',
                         categoria: 'Servicio Mecánico',
+                        prioridad: 'Media',
                         titulo: 'Extensión de horario en taller los sábados por la tarde.',
                         estatus: 'Resuelta',
                         respuesta: 'Se aprobó la jornada extendida de taller hasta las 15:00 hrs los sábados.',
@@ -352,6 +355,7 @@
                         fecha: '2026-09-25',
                         sucursal: 'Querétaro',
                         categoria: 'Seguridad e Higiene',
+                        prioridad: 'Alta',
                         titulo: 'Renovación de Equipo de Protección Personal (EPP) para taller.',
                         estatus: 'En Revisión',
                         respuesta: 'Comité de seguridad evaluando el proveedor de botas de casquillo.',
@@ -363,6 +367,7 @@
                         fecha: '2026-10-01',
                         sucursal: 'Monterrey',
                         categoria: 'Procesos de Almacén',
+                        prioridad: 'Baja',
                         titulo: 'Implementar lectores de código de barras para inventario mensual.',
                         estatus: 'Recibida',
                         respuesta: 'Sugerencia registrada. En espera de revisión por el Comité de Mejora Continua.',
@@ -373,17 +378,27 @@
             }
         }
 
-        // Get Current Form URLs
         function getUrls() {
-            return JSON.parse(localStorage.getItem('gimtrac_urls')) || defaultFormUrls;
+            const stored = localStorage.getItem('gimtrac_urls');
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    return {
+                        cliente: parsed.cliente || LINK_GOOGLE_FORMS_CLIENTE,
+                        colaborador: parsed.colaborador || LINK_GOOGLE_FORMS_COLABORADOR
+                    };
+                } catch(e) {}
+            }
+            return {
+                cliente: LINK_GOOGLE_FORMS_CLIENTE,
+                colaborador: LINK_GOOGLE_FORMS_COLABORADOR
+            };
         }
 
-        // Get Current Folios
         function getFolios() {
             return JSON.parse(localStorage.getItem('gimtrac_folios')) || [];
         }
 
-        // Render current screen inside viewport
         function renderScreen() {
             const viewport = document.getElementById('screen-viewport');
             
@@ -403,7 +418,6 @@
             }
         }
 
-        // SCREEN 1: Pantalla de Acceso (Selector de Perfil)
         function renderAccessScreen() {
             return `
                 <div class="flex-1 flex flex-col justify-between p-5 watermark relative">
@@ -417,7 +431,7 @@
                         </div>
                     </div>
 
-                    <!-- Main Section Title -->
+                    <!-- Title Section -->
                     <div class="text-center my-auto py-2">
                         <h2 class="text-xl font-extrabold text-slate-900 tracking-tight leading-tight">
                             MEJORA CONTINUA<br><span class="text-gimtrac-green">GIMTRAC</span>
@@ -427,7 +441,7 @@
                         </p>
                     </div>
 
-                    <!-- Profile Selector Buttons -->
+                    <!-- Profile Selector Options -->
                     <div class="space-y-3.5 my-auto">
                         <!-- Option 1: Soy cliente -->
                         <button onclick="navigateTo('cliente')" class="w-full bg-white hover:bg-slate-50 border-2 border-slate-200 hover:border-gimtrac-green p-3.5 rounded-2xl text-left transition shadow-sm group relative overflow-hidden">
@@ -463,7 +477,7 @@
                                 </div>
                                 <div class="flex-1">
                                     <div class="font-extrabold text-white text-base">Acceso de Administrador</div>
-                                    <div class="text-[10px] text-slate-300">Ingreso mediante usuario y contraseña para administración y seguimiento.</div>
+                                    <div class="text-[10px] text-slate-300">Ingreso con credenciales para administración y seguimiento.</div>
                                 </div>
                             </div>
                         </button>
@@ -477,7 +491,6 @@
             `;
         }
 
-        // SCREEN 2: Pantalla 2 (Perfil Cliente) - Exactly as depicted in image
         function renderClienteScreen() {
             return `
                 <div class="flex-1 flex flex-col justify-between p-4 watermark relative">
@@ -485,7 +498,6 @@
 
                     <!-- Header -->
                     <div>
-                        <!-- Navigation Back & Title -->
                         <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-3">
                             <button onclick="navigateTo('access')" class="text-slate-500 hover:text-slate-800 p-1 flex items-center gap-1 text-xs font-semibold">
                                 <i class="fa-solid fa-bars text-sm"></i>
@@ -506,10 +518,10 @@
                         </div>
                     </div>
 
-                    <!-- Two Main Action Cards Side-by-Side (Matching image 2) -->
+                    <!-- Action Cards -->
                     <div class="grid grid-cols-2 gap-3 my-auto">
                         
-                        <!-- Card A: Enviar sugerencia -->
+                        <!-- Card 1: Enviar sugerencia -->
                         <button onclick="openFormUrl('cliente')" class="bg-white hover:bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-md hover:shadow-lg transition group aspect-square">
                             <div class="w-14 h-14 rounded-2xl border border-slate-300 flex items-center justify-center text-slate-700 group-hover:border-gimtrac-green group-hover:text-gimtrac-green transition mb-2 bg-slate-50">
                                 <i class="fa-regular fa-pen-to-square text-2xl"></i>
@@ -517,7 +529,7 @@
                             <span class="font-bold text-slate-800 text-xs group-hover:text-gimtrac-green leading-tight">Enviar sugerencia</span>
                         </button>
 
-                        <!-- Card B: Consultar estado -->
+                        <!-- Card 2: Consultar estado -->
                         <button onclick="openConsultarFolioModal()" class="bg-white hover:bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-md hover:shadow-lg transition group aspect-square">
                             <div class="w-14 h-14 rounded-2xl border border-slate-300 flex items-center justify-center text-slate-700 group-hover:border-gimtrac-green group-hover:text-gimtrac-green transition mb-2 bg-slate-50">
                                 <i class="fa-solid fa-magnifying-glass text-2xl"></i>
@@ -527,7 +539,7 @@
 
                     </div>
 
-                    <!-- Bottom Note as shown in image 2 -->
+                    <!-- Bottom Note -->
                     <div class="text-center pb-2">
                         <span class="text-xs text-slate-600 font-medium bg-slate-200/70 px-3 py-1 rounded-full">
                             No es necesario crear cuenta.
@@ -537,7 +549,6 @@
             `;
         }
 
-        // SCREEN 3: Pantalla 3 (Perfil Colaborador) - Exactly as depicted in image
         function renderColaboradorScreen() {
             return `
                 <div class="flex-1 flex flex-col justify-between p-4 watermark relative">
@@ -545,7 +556,6 @@
 
                     <!-- Header -->
                     <div>
-                        <!-- Navigation Back & Title -->
                         <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-3">
                             <button onclick="navigateTo('access')" class="text-slate-500 hover:text-slate-800 p-1 flex items-center gap-1 text-xs font-semibold">
                                 <i class="fa-solid fa-bars text-sm"></i>
@@ -567,10 +577,10 @@
                         </div>
                     </div>
 
-                    <!-- Two Main Action Cards Side-by-Side (Matching image 3) -->
+                    <!-- Action Cards -->
                     <div class="grid grid-cols-2 gap-3 my-auto">
                         
-                        <!-- Card A: Enviar sugerencia -->
+                        <!-- Card 1: Enviar sugerencia -->
                         <button onclick="openFormUrl('colaborador')" class="bg-white hover:bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-md hover:shadow-lg transition group aspect-square">
                             <div class="w-14 h-14 rounded-2xl border border-slate-300 flex items-center justify-center text-slate-700 group-hover:border-gimtrac-green group-hover:text-gimtrac-green transition mb-2 bg-slate-50">
                                 <i class="fa-regular fa-pen-to-square text-2xl"></i>
@@ -578,7 +588,7 @@
                             <span class="font-bold text-slate-800 text-xs group-hover:text-gimtrac-green leading-tight">Enviar sugerencia</span>
                         </button>
 
-                        <!-- Card B: Consultar estado -->
+                        <!-- Card 2: Consultar estado -->
                         <button onclick="openConsultarFolioModal()" class="bg-white hover:bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-md hover:shadow-lg transition group aspect-square">
                             <div class="w-14 h-14 rounded-2xl border border-slate-300 flex items-center justify-center text-slate-700 group-hover:border-gimtrac-green group-hover:text-gimtrac-green transition mb-2 bg-slate-50">
                                 <i class="fa-solid fa-magnifying-glass text-2xl"></i>
@@ -588,7 +598,7 @@
 
                     </div>
 
-                    <!-- Bottom Note as shown in image 3 -->
+                    <!-- Bottom Note -->
                     <div class="text-center pb-2">
                         <span class="text-xs text-slate-600 font-medium bg-slate-200/70 px-3 py-1 rounded-full">
                             Solo identifícate al enviar.
@@ -597,9 +607,6 @@
                 </div>
             `;
         }
-
-        // SCREEN 4: Admin View & Login
-        let isAdminLoggedIn = false;
 
         function renderAdminScreen() {
             if (!isAdminLoggedIn) {
@@ -640,19 +647,19 @@
                             </form>
 
                             <p class="text-[10px] text-center text-slate-400 mt-4">
-                                Demo: Usuario <b>admin</b> | Pass <b>admin123</b>
+                                Credenciales demo: <b>admin</b> / <b>admin123</b>
                             </p>
                         </div>
                     </div>
                 `;
             }
 
-            // Admin Dashboard Panel
+            // Admin Dashboard
             const folios = getFolios();
             
             return `
                 <div class="flex-1 flex flex-col p-4 bg-slate-50 overflow-y-auto">
-                    <!-- Top Admin Bar -->
+                    <!-- Top Bar -->
                     <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-3 shrink-0">
                         <div class="flex items-center gap-2">
                             <span class="bg-gimtrac-green text-white text-[10px] font-bold px-2 py-0.5 rounded-md">ADMIN</span>
@@ -660,7 +667,7 @@
                         </div>
                         <div class="flex items-center gap-2">
                             <button onclick="openFormUrlModal()" class="text-slate-600 hover:text-gimtrac-green text-xs font-semibold flex items-center gap-1 bg-white px-2 py-1 rounded-lg border border-slate-200">
-                                <i class="fa-solid fa-gear"></i> URLs
+                                <i class="fa-solid fa-gear"></i> URLs Forms
                             </button>
                             <button onclick="adminLogout()" class="text-rose-600 hover:text-rose-800 text-xs font-bold bg-rose-50 px-2 py-1 rounded-lg border border-rose-100">
                                 <i class="fa-solid fa-right-from-bracket"></i> Salir
@@ -668,7 +675,7 @@
                         </div>
                     </div>
 
-                    <!-- Statistics Summary -->
+                    <!-- Statistics Summary Cards -->
                     <div class="grid grid-cols-3 gap-2 mb-3 shrink-0">
                         <div class="bg-white p-2 rounded-xl border border-slate-200 text-center">
                             <span class="text-[10px] text-slate-400 font-semibold block">Total</span>
@@ -684,7 +691,7 @@
                         </div>
                     </div>
 
-                    <!-- Table List of Folios -->
+                    <!-- List of Proposal Cards -->
                     <div class="space-y-2.5 flex-1">
                         ${folios.map(item => `
                             <div class="bg-white rounded-2xl p-3 border border-slate-200 shadow-sm flex flex-col justify-between gap-2 text-xs">
@@ -719,7 +726,6 @@
             `;
         }
 
-        // Helpers
         function getStatusBadgeClass(status) {
             switch (status) {
                 case 'Recibida': return 'bg-slate-100 text-slate-700 border border-slate-200';
@@ -730,13 +736,11 @@
             }
         }
 
-        // Navigation Controller
         function navigateTo(screen) {
             currentScreen = screen;
             renderScreen();
         }
 
-        // Open Form URL
         function openFormUrl(profileType) {
             const urls = getUrls();
             const targetUrl = urls[profileType];
@@ -748,7 +752,6 @@
             }
         }
 
-        // Modals Management
         function closeModal(modalId) {
             document.getElementById(modalId).classList.add('hidden');
         }
@@ -762,12 +765,18 @@
 
         function saveFormUrls() {
             const newUrls = {
-                cliente: document.getElementById('url-cliente-input').value.trim(),
-                colaborador: document.getElementById('url-colaborador-input').value.trim()
+                cliente: document.getElementById('url-cliente-input').value.trim() || LINK_GOOGLE_FORMS_CLIENTE,
+                colaborador: document.getElementById('url-colaborador-input').value.trim() || LINK_GOOGLE_FORMS_COLABORADOR
             };
             localStorage.setItem('gimtrac_urls', JSON.stringify(newUrls));
             closeModal('modal-url-config');
-            alert('¡Enlaces de Google Forms guardados correctamente!');
+            
+            // Temporary feedback notification
+            const notification = document.createElement('div');
+            notification.className = 'fixed bottom-4 right-4 bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-xl z-50 animate-bounce';
+            notification.innerHTML = '<i class="fa-solid fa-circle-check mr-1"></i> Links guardados correctamente';
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
         }
 
         function openConsultarFolioModal() {
@@ -804,7 +813,7 @@
                         <div class="text-[10px] font-bold text-slate-500 mb-2">PROGRESO DEL SEGUIMIENTO:</div>
                         <div class="flex items-center justify-between relative">
                             <div class="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-1 bg-slate-200 z-0"></div>
-                            <div class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-gimtrac-green z-0 transition-all duration-500" style="width: ${(currentIndex / (steps.length - 1)) * 100}%"></div>
+                            <div class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-gimtrac-green z-0 transition-all duration-500" style="width: ${Math.max(0, (currentIndex / (steps.length - 1)) * 100)}%"></div>
                             
                             ${steps.map((step, idx) => {
                                 const isDone = idx <= currentIndex;
@@ -857,7 +866,6 @@
             }
         }
 
-        // Admin Auth Handlers
         function handleAdminLogin(e) {
             e.preventDefault();
             const u = document.getElementById('admin-user').value.trim();
@@ -912,19 +920,16 @@
             renderScreen();
         }
 
-        // View Mode Switcher (Simulator vs Fullscreen Expand)
         function toggleViewMode() {
             const phoneFrame = document.getElementById('phone-frame');
             const toggleText = document.getElementById('toggle-view-text');
 
             if (isPhoneView) {
-                // Switch to expanded mode
                 phoneFrame.classList.remove('phone-container');
                 phoneFrame.classList.add('w-full', 'max-w-4xl', 'h-[720px]', 'rounded-3xl', 'shadow-2xl', 'border-4', 'border-slate-800');
                 toggleText.innerText = "Vista Móvil";
                 isPhoneView = false;
             } else {
-                // Switch back to mobile simulator
                 phoneFrame.classList.remove('w-full', 'max-w-4xl', 'h-[720px]', 'border-4');
                 phoneFrame.classList.add('phone-container');
                 toggleText.innerText = "Vista Expandida";
@@ -933,16 +938,12 @@
         }
 
         function resetDemoData() {
-            if (confirm('¿Deseas reestablecer los folios y enlaces predeterminados de prueba?')) {
-                localStorage.removeItem('gimtrac_urls');
-                localStorage.removeItem('gimtrac_folios');
-                initStorage();
-                renderScreen();
-                alert('Datos restablecidos con éxito.');
-            }
+            localStorage.removeItem('gimtrac_urls');
+            localStorage.removeItem('gimtrac_folios');
+            initStorage();
+            renderScreen();
         }
 
-        // Live clock update for simulator status bar
         function updateClock() {
             const now = new Date();
             const hours = String(now.getHours()).padStart(2, '0');
@@ -951,7 +952,7 @@
             if (el) el.innerText = `${hours}:${minutes}`;
         }
 
-        // On Load Init
+        // On Load Initializer
         window.onload = function() {
             initStorage();
             renderScreen();
