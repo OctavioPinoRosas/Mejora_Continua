@@ -1,0 +1,1642 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Mejora Continua GIMTRAC</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gimtrac: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#2E7D32', // Corporate Green
+              800: '#1b5e20', // Darker Green Accent
+              900: '#0f3913',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom scrollbar for desktop & database tables */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    /* Mobile Frame Simulation Styling */
+    .mobile-frame {
+      width: 385px;
+      height: 780px;
+      border-radius: 40px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 12px #1e293b;
+      position: relative;
+      overflow: hidden;
+      background: #ffffff;
+      transition: all 0.3s ease;
+    }
+    
+    .mobile-notch {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 140px;
+      height: 24px;
+      background-color: #1e293b;
+      border-bottom-left-radius: 14px;
+      border-bottom-right-radius: 14px;
+      z-index: 50;
+    }
+
+    /* Soft transition between screens */
+    .screen-fade {
+      animation: fadeIn 0.25s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="h-full flex flex-col font-sans text-slate-800 bg-slate-100 antialiased selection:bg-gimtrac-700 selection:text-white">
+
+  <!-- TOP BRANDING & MODE CONTROL NAVBAR -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Logo & App Title -->
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="app.navigateTo('select_profile')">
+        <div class="bg-gimtrac-700 text-white p-2 rounded-lg flex items-center justify-center shadow-md">
+          <i class="fa-solid fa-leaf text-xl"></i>
+        </div>
+        <div>
+          <div class="flex items-center space-x-1.5">
+            <span class="font-extrabold text-lg tracking-tight text-gimtrac-800">GIMTRAC</span>
+            <span class="text-xs bg-gimtrac-100 text-gimtrac-800 font-bold px-1.5 py-0.5 rounded">®</span>
+          </div>
+          <p class="text-xs font-medium text-slate-500 hidden sm:block">Soluciones de Agricultura · Mejora Continua</p>
+        </div>
+      </div>
+
+      <!-- Navigation & View Mode Controls -->
+      <div class="flex items-center space-x-3">
+        <!-- View Mode Switcher -->
+        <div class="bg-slate-100 p-1 rounded-xl flex items-center text-xs font-semibold text-slate-600 border border-slate-200">
+          <button id="btnModeMobile" onclick="app.setDeviceMode('mobile')" class="px-2.5 py-1.5 rounded-lg flex items-center space-x-1.5 transition-all bg-white text-slate-800 shadow-sm">
+            <i class="fa-solid fa-mobile-screen"></i>
+            <span class="hidden md:inline">Vista Móvil</span>
+          </button>
+          <button id="btnModeDesktop" onclick="app.setDeviceMode('desktop')" class="px-2.5 py-1.5 rounded-lg flex items-center space-x-1.5 transition-all text-slate-500 hover:text-slate-800">
+            <i class="fa-solid fa-desktop"></i>
+            <span class="hidden md:inline">Vista Pantalla Completa</span>
+          </button>
+        </div>
+
+        <!-- Session Status Badge / Logout -->
+        <div id="userBadgeContainer" class="hidden items-center space-x-2 border-l border-slate-200 pl-3">
+          <span id="userBadgeText" class="text-xs font-semibold bg-slate-100 text-slate-700 px-2.5 py-1 rounded-full border border-slate-200">
+            Perfil
+          </span>
+          <button onclick="app.logout()" title="Cerrar sesión" class="text-slate-400 hover:text-red-600 p-1.5 rounded-lg transition-colors">
+            <i class="fa-solid fa-right-from-bracket"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="flex-1 flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+    <div id="viewWrapper" class="w-full flex justify-center items-center">
+      
+      <!-- Mobile Frame Container (Toggled dynamically) -->
+      <div id="mobileFrame" class="mobile-frame flex flex-col my-2">
+        <div class="mobile-notch"></div>
+        
+        <!-- Mobile View Inner Header -->
+        <div class="bg-gimtrac-700 text-white pt-8 pb-3 px-4 flex items-center justify-between shadow-md shrink-0">
+          <div class="flex items-center space-x-2">
+            <i class="fa-solid fa-seedling text-lg"></i>
+            <span class="font-bold text-sm tracking-wide">GIMTRAC</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <button onclick="app.navigateTo('select_profile')" title="Inicio" class="text-white/80 hover:text-white p-1">
+              <i class="fa-solid fa-house text-xs"></i>
+            </button>
+            <span id="mobileProfileBadge" class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full font-medium">Invitado</span>
+          </div>
+        </div>
+
+        <!-- Mobile Scrollable Screen Canvas -->
+        <div id="mobileCanvas" class="flex-1 overflow-y-auto p-4 bg-slate-50 relative">
+          <!-- SCREENS WILL BE RENDERED HERE -->
+        </div>
+
+        <!-- Mobile Home Indicator Bottom Bar -->
+        <div class="h-5 bg-white shrink-0 flex justify-center items-center border-t border-slate-100">
+          <div class="w-28 h-1 bg-slate-300 rounded-full"></div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- TEMPLATES FOR THE 7 SCREENS -->
+  <div id="screenTemplates" class="hidden">
+
+    <!-- ==================== SCREEN 1: SELECTOR DE PERFIL ==================== -->
+    <div id="screen_select_profile" class="screen-fade space-y-5">
+      <div class="text-center space-y-2 pt-2">
+        <div class="inline-flex p-3 bg-gimtrac-100 text-gimtrac-700 rounded-2xl mb-1 shadow-inner">
+          <i class="fa-solid fa-hand-holding-heart text-3xl"></i>
+        </div>
+        <h1 class="text-xl font-extrabold text-slate-800 uppercase tracking-tight">MEJORA CONTINUA GIMTRAC</h1>
+        <p class="text-sm text-slate-600 font-medium px-2">Tu opinión nos ayuda a mejorar.<br><span class="font-bold text-gimtrac-700">¿Quién eres?</span></p>
+      </div>
+
+      <div class="space-y-3 pt-2">
+        <!-- Option 1: Cliente -->
+        <button onclick="app.selectProfile('cliente')" class="w-full text-left bg-white hover:bg-gimtrac-50 border-2 border-slate-200 hover:border-gimtrac-600 p-4 rounded-2xl transition-all duration-200 group shadow-sm flex items-start space-x-3.5">
+          <div class="bg-slate-100 group-hover:bg-gimtrac-700 group-hover:text-white text-slate-700 p-3 rounded-xl transition-colors shrink-0">
+            <i class="fa-solid fa-user-tag text-xl"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex items-center justify-between">
+              <h2 class="font-bold text-slate-800 group-hover:text-gimtrac-800 text-base">Soy cliente</h2>
+              <i class="fa-solid fa-chevron-right text-xs text-slate-400 group-hover:text-gimtrac-700 group-hover:translate-x-1 transition-all"></i>
+            </div>
+            <p class="text-xs text-slate-500 mt-0.5">Acceso directo a encuesta/sugerencia de cliente. Sin necesidad de registrarse.</p>
+          </div>
+        </button>
+
+        <!-- Option 2: Colaborador -->
+        <button onclick="app.selectProfile('colaborador')" class="w-full text-left bg-white hover:bg-gimtrac-50 border-2 border-slate-200 hover:border-gimtrac-600 p-4 rounded-2xl transition-all duration-200 group shadow-sm flex items-start space-x-3.5">
+          <div class="bg-slate-100 group-hover:bg-gimtrac-700 group-hover:text-white text-slate-700 p-3 rounded-xl transition-colors shrink-0">
+            <i class="fa-solid fa-user-gear text-xl"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex items-center justify-between">
+              <h2 class="font-bold text-slate-800 group-hover:text-gimtrac-800 text-base">Soy colaborador</h2>
+              <i class="fa-solid fa-chevron-right text-xs text-slate-400 group-hover:text-gimtrac-700 group-hover:translate-x-1 transition-all"></i>
+            </div>
+            <p class="text-xs text-slate-500 mt-0.5">Acceso a encuesta interna para empleados. Identificación rápida.</p>
+          </div>
+        </button>
+
+        <!-- Option 3: Administrador -->
+        <button onclick="app.selectProfile('admin')" class="w-full text-left bg-slate-800 hover:bg-slate-900 border-2 border-slate-800 p-4 rounded-2xl transition-all duration-200 group shadow-md flex items-start space-x-3.5 text-white">
+          <div class="bg-white/10 group-hover:bg-gimtrac-500 text-white p-3 rounded-xl transition-colors shrink-0">
+            <i class="fa-solid fa-key text-xl"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex items-center justify-between">
+              <h2 class="font-bold text-white text-base">Acceso de Administrador</h2>
+              <i class="fa-solid fa-chevron-right text-xs text-slate-400 group-hover:text-white group-hover:translate-x-1 transition-all"></i>
+            </div>
+            <p class="text-xs text-slate-300 mt-0.5">Ingreso mediante usuario y contraseña para administración y seguimiento.</p>
+          </div>
+        </button>
+      </div>
+
+      <div class="pt-4 text-center">
+        <span class="inline-flex items-center text-xs text-slate-400 bg-white px-3 py-1 rounded-full border border-slate-200">
+          <i class="fa-solid fa-shield-halved mr-1.5 text-gimtrac-700"></i> Sistema seguro de retroalimentación
+        </span>
+      </div>
+    </div>
+
+
+    <!-- ==================== SCREEN 2: MENÚ CLIENTE ==================== -->
+    <div id="screen_client_menu" class="screen-fade space-y-5">
+      <div class="flex items-center space-x-3 border-b border-slate-200 pb-3">
+        <div class="bg-gimtrac-100 text-gimtrac-700 p-2.5 rounded-xl">
+          <i class="fa-solid fa-user-check text-xl"></i>
+        </div>
+        <div>
+          <h2 class="font-bold text-slate-800 text-lg">GIMTRAC - Perfil Cliente</h2>
+          <p class="text-xs text-slate-500">¿Cómo podemos ayudarte hoy?</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-3.5 pt-2">
+        <!-- Button 1: Enviar sugerencia -->
+        <button onclick="app.openForm('cliente')" class="bg-white hover:bg-gimtrac-50 border-2 border-gimtrac-600 p-5 rounded-2xl shadow-sm text-left transition-all group flex items-center space-x-4">
+          <div class="bg-gimtrac-700 text-white p-3.5 rounded-xl group-hover:scale-105 transition-transform shadow-md">
+            <i class="fa-solid fa-pen-to-square text-2xl"></i>
+          </div>
+          <div>
+            <h3 class="font-extrabold text-slate-800 text-base group-hover:text-gimtrac-800">📝 Enviar sugerencia</h3>
+            <p class="text-xs text-slate-500 mt-1">Comparte tus comentarios sobre atención, productos o sucursales.</p>
+          </div>
+        </button>
+
+        <!-- Button 2: Consultar estado -->
+        <button onclick="app.navigateTo('check_status')" class="bg-white hover:bg-slate-50 border-2 border-slate-200 hover:border-slate-400 p-5 rounded-2xl shadow-sm text-left transition-all group flex items-center space-x-4">
+          <div class="bg-slate-700 text-white p-3.5 rounded-xl group-hover:scale-105 transition-transform shadow-md">
+            <i class="fa-solid fa-magnifying-glass text-2xl"></i>
+          </div>
+          <div>
+            <h3 class="font-extrabold text-slate-800 text-base">🔎 Consultar estado</h3>
+            <p class="text-xs text-slate-500 mt-1">Revisa el progreso de tu sugerencia ingresando tu número de folio.</p>
+          </div>
+        </button>
+      </div>
+
+      <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-center space-x-3 text-amber-800 text-xs">
+        <i class="fa-solid fa-circle-info text-amber-600 text-base shrink-0"></i>
+        <span><strong>No es necesario crear una cuenta.</strong> Guardaremos tu folio para que consultes el avance cuando gustes.</span>
+      </div>
+
+      <button onclick="app.navigateTo('select_profile')" class="w-full text-center text-xs text-slate-500 hover:text-slate-800 pt-2 font-semibold">
+        <i class="fa-solid fa-arrow-left mr-1"></i> Volver al selector de perfil
+      </button>
+    </div>
+
+
+    <!-- ==================== SCREEN 3: MENÚ COLABORADOR ==================== -->
+    <div id="screen_colaborador_menu" class="screen-fade space-y-5">
+      <div class="flex items-center space-x-3 border-b border-slate-200 pb-3">
+        <div class="bg-gimtrac-100 text-gimtrac-700 p-2.5 rounded-xl">
+          <i class="fa-solid fa-id-badge text-xl"></i>
+        </div>
+        <div>
+          <h2 class="font-bold text-slate-800 text-lg">GIMTRAC - Perfil Colaborador</h2>
+          <p class="text-xs text-slate-500">Identificación de empleado para sugerencias internas</p>
+        </div>
+      </div>
+
+      <!-- Quick Identification Card -->
+      <div class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-gimtrac-700 uppercase tracking-wider">Datos de identificación</span>
+          <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded">Solo para control interno</span>
+        </div>
+        
+        <div class="grid grid-cols-1 gap-2 text-xs">
+          <div>
+            <label class="block font-semibold text-slate-600 mb-1">Nombre completo *</label>
+            <input type="text" id="colabNameInput" placeholder="Ej. Carlos Mendoza" oninput="app.saveColabData()" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-gimtrac-700 focus:outline-none">
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block font-semibold text-slate-600 mb-1">Sucursal</label>
+              <select id="colabSucursalInput" onchange="app.saveColabData()" class="w-full px-2 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-gimtrac-700 focus:outline-none bg-white">
+                <option value="Puebla">Puebla</option>
+                <option value="CDMX">CDMX</option>
+                <option value="Guadalajara">Guadalajara</option>
+                <option value="Monterrey">Monterrey</option>
+                <option value="Querétaro">Querétaro</option>
+                <option value="Veracruz">Veracruz</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-600 mb-1">Puesto / Depto</label>
+              <input type="text" id="colabPuestoInput" placeholder="Ej. Técnico / Mantenimiento" oninput="app.saveColabData()" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-gimtrac-700 focus:outline-none">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Colaborador Menu Options -->
+      <div class="space-y-3">
+        <button onclick="app.openForm('colaborador')" class="w-full bg-gimtrac-700 hover:bg-gimtrac-800 text-white p-3.5 rounded-xl shadow-md text-left transition-all flex items-center justify-between group">
+          <div class="flex items-center space-x-3">
+            <i class="fa-solid fa-paper-plane text-lg"></i>
+            <span class="font-bold text-sm">📝 Enviar nueva sugerencia</span>
+          </div>
+          <i class="fa-solid fa-chevron-right text-xs opacity-70 group-hover:translate-x-1 transition-transform"></i>
+        </button>
+
+        <button onclick="app.showMisSugerencias()" class="w-full bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 p-3.5 rounded-xl shadow-sm text-left transition-all flex items-center justify-between group">
+          <div class="flex items-center space-x-3">
+            <i class="fa-solid fa-clipboard-list text-gimtrac-700 text-lg"></i>
+            <span class="font-bold text-sm">📋 Mis sugerencias enviadas</span>
+          </div>
+          <i class="fa-solid fa-chevron-right text-xs text-slate-400 group-hover:translate-x-1 transition-transform"></i>
+        </button>
+
+        <button onclick="app.navigateTo('check_status')" class="w-full bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 p-3.5 rounded-xl shadow-sm text-left transition-all flex items-center justify-between group">
+          <div class="flex items-center space-x-3">
+            <i class="fa-solid fa-magnifying-glass text-slate-600 text-lg"></i>
+            <span class="font-bold text-sm">🔎 Consultar folio específico</span>
+          </div>
+          <i class="fa-solid fa-chevron-right text-xs text-slate-400 group-hover:translate-x-1 transition-transform"></i>
+        </button>
+      </div>
+
+      <button onclick="app.navigateTo('select_profile')" class="w-full text-center text-xs text-slate-500 hover:text-slate-800 pt-2 font-semibold">
+        <i class="fa-solid fa-arrow-left mr-1"></i> Cambiar de perfil
+      </button>
+    </div>
+
+
+    <!-- ==================== SCREEN 4: LOGIN ADMINISTRADOR ==================== -->
+    <div id="screen_admin_login" class="screen-fade space-y-5">
+      <div class="text-center space-y-1">
+        <div class="inline-flex p-3 bg-slate-800 text-white rounded-2xl mb-1 shadow-md">
+          <i class="fa-solid fa-user-shield text-2xl"></i>
+        </div>
+        <h2 class="font-extrabold text-slate-800 text-xl">ACCESO ADMINISTRADOR</h2>
+        <p class="text-xs text-slate-500">Comité de Mejora Continua GIMTRAC</p>
+      </div>
+
+      <form onsubmit="app.handleAdminLogin(event)" class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Usuario</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+              <i class="fa-solid fa-user"></i>
+            </span>
+            <input type="text" id="adminUser" value="admin" required class="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gimtrac-700 focus:outline-none">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Contraseña</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+              <i class="fa-solid fa-lock"></i>
+            </span>
+            <input type="password" id="adminPass" value="admin123" required class="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gimtrac-700 focus:outline-none">
+          </div>
+        </div>
+
+        <div id="loginError" class="hidden text-xs text-red-600 bg-red-50 p-2.5 rounded-lg border border-red-200 flex items-center space-x-2">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span>Usuario o contraseña incorrectos. Usa <strong>admin / admin123</strong></span>
+        </div>
+
+        <button type="submit" class="w-full bg-gimtrac-700 hover:bg-gimtrac-800 text-white font-bold py-2.5 rounded-xl shadow-md transition-all text-sm flex items-center justify-center space-x-2">
+          <span>Iniciar Sesión</span>
+          <i class="fa-solid fa-right-to-bracket"></i>
+        </button>
+      </form>
+
+      <div class="text-center">
+        <p class="text-[11px] text-slate-400">Credenciales Demo: <strong>admin</strong> / <strong>admin123</strong></p>
+        <button onclick="app.navigateTo('select_profile')" class="text-xs text-slate-500 hover:text-slate-800 font-semibold mt-3">
+          <i class="fa-solid fa-arrow-left mr-1"></i> Volver
+        </button>
+      </div>
+    </div>
+
+
+    <!-- ==================== SCREEN 5: PANTALLA DE ENCUESTA / FORMULARIO ==================== -->
+    <div id="screen_form_suggestion" class="screen-fade space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+        <div class="flex items-center space-x-2">
+          <div class="bg-gimtrac-700 text-white p-2 rounded-lg text-xs">
+            <i class="fa-solid fa-pen-nib"></i>
+          </div>
+          <div>
+            <h2 class="font-extrabold text-slate-800 text-base uppercase">ENVIAR SUGERENCIA</h2>
+            <p id="formOriginSubtitle" class="text-[11px] text-gimtrac-700 font-semibold">Perfil: Cliente</p>
+          </div>
+        </div>
+        <button onclick="app.backFromForm()" class="text-xs text-slate-400 hover:text-slate-700">
+          <i class="fa-solid fa-xmark text-base"></i>
+        </button>
+      </div>
+
+      <form onsubmit="app.submitSuggestion(event)" class="space-y-3 text-xs">
+        <!-- Emisor Selector Hidden or Visible switch -->
+        <div class="bg-slate-100 p-1 rounded-xl flex items-center text-[11px] font-bold text-slate-600">
+          <button type="button" id="btnOriginCliente" onclick="app.setFormOrigin('cliente')" class="flex-1 py-1.5 rounded-lg text-center transition-all bg-white text-gimtrac-800 shadow-sm">
+            👤 Cliente
+          </button>
+          <button type="button" id="btnOriginColaborador" onclick="app.setFormOrigin('colaborador')" class="flex-1 py-1.5 rounded-lg text-center transition-all text-slate-500 hover:text-slate-800">
+            👷 Colaborador
+          </button>
+        </div>
+
+        <!-- Dynamic Colaborador Info Fields -->
+        <div id="colaboradorFieldsSection" class="hidden bg-gimtrac-50 border border-gimtrac-200 p-3 rounded-xl space-y-2">
+          <p class="font-bold text-gimtrac-800 text-[11px] flex items-center">
+            <i class="fa-solid fa-id-card mr-1.5"></i> Identificación del Colaborador
+          </p>
+          <div class="grid grid-cols-1 gap-2">
+            <input type="text" id="formColabName" placeholder="Nombre completo del colaborador *" class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg bg-white focus:outline-none">
+            <div class="grid grid-cols-2 gap-2">
+              <input type="text" id="formColabPuesto" placeholder="Puesto" class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg bg-white focus:outline-none">
+              <input type="text" id="formColabDepto" placeholder="Departamento" class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg bg-white focus:outline-none">
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Form Inputs -->
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Título de la sugerencia *</label>
+          <input type="text" id="formTitle" required placeholder="Ej. Propuesta de mejora en área de entregas" class="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gimtrac-700 focus:outline-none">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Categoría *</label>
+            <select id="formCategory" required class="w-full px-2.5 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gimtrac-700 focus:outline-none bg-white">
+              <option value="Atención al cliente">Atención al cliente</option>
+              <option value="Procesos internos">Procesos internos</option>
+              <option value="Instalaciones">Instalaciones</option>
+              <option value="Calidad de Producto">Calidad de Producto</option>
+              <option value="Seguridad e Higiene">Seguridad e Higiene</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Sucursal *</label>
+            <select id="formSucursal" required class="w-full px-2.5 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gimtrac-700 focus:outline-none bg-white">
+              <option value="Puebla">Puebla</option>
+              <option value="CDMX">CDMX</option>
+              <option value="Guadalajara">Guadalajara</option>
+              <option value="Monterrey">Monterrey</option>
+              <option value="Querétaro">Querétaro</option>
+              <option value="Veracruz">Veracruz</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Descripción detallada *</label>
+          <textarea id="formDescription" required rows="3" placeholder="Explica claramente la oportunidad de mejora o problema detectado..." class="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gimtrac-700 focus:outline-none"></textarea>
+        </div>
+
+        <!-- Attachment Dropzone Simulation -->
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Adjuntar evidencia (Opcional)</label>
+          <div class="border-2 border-dashed border-slate-300 rounded-xl p-3 text-center hover:bg-slate-50 cursor-pointer transition-colors relative" onclick="document.getElementById('formFileInput').click()">
+            <input type="file" id="formFileInput" accept="image/*" class="hidden" onchange="app.handleFileSelect(event)">
+            <div id="fileUploadPlaceholder" class="space-y-1">
+              <i class="fa-solid fa-cloud-arrow-up text-slate-400 text-xl"></i>
+              <p class="text-slate-500 font-medium">Haz clic o arrastra una imagen aquí</p>
+            </div>
+            <div id="fileUploadPreview" class="hidden flex items-center justify-center space-x-2">
+              <img id="previewImage" src="" alt="Vista previa" class="h-12 w-12 object-cover rounded-lg border border-slate-300">
+              <span id="previewFileName" class="text-xs text-slate-700 font-semibold truncate max-w-[150px]">imagen.jpg</span>
+              <button type="button" onclick="app.removeFile(event)" class="text-red-500 p-1 hover:text-red-700">
+                <i class="fa-solid fa-trash text-xs"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-2">
+          <button type="submit" class="w-full bg-gimtrac-700 hover:bg-gimtrac-800 text-white font-bold py-3 rounded-xl shadow-md transition-all text-sm flex items-center justify-center space-x-2">
+            <i class="fa-solid fa-paper-plane"></i>
+            <span>Enviar Sugerencia</span>
+          </button>
+        </div>
+      </form>
+    </div>
+
+
+    <!-- ==================== SCREEN 6: CONSULTAR ESTADO ==================== -->
+    <div id="screen_check_status" class="screen-fade space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+        <div class="flex items-center space-x-2">
+          <div class="bg-slate-700 text-white p-2 rounded-lg text-xs">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </div>
+          <div>
+            <h2 class="font-extrabold text-slate-800 text-base">CONSULTAR ESTADO</h2>
+            <p class="text-[11px] text-slate-500">Ingresa tu número de folio asignado</p>
+          </div>
+        </div>
+        <button onclick="app.backToCurrentMenu()" class="text-xs text-slate-400 hover:text-slate-700">
+          <i class="fa-solid fa-xmark text-base"></i>
+        </button>
+      </div>
+
+      <!-- Search Input Bar -->
+      <div class="flex space-x-2">
+        <input type="text" id="statusFolioInput" placeholder="Ej. SUG-2026-00101" class="flex-1 px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-gimtrac-700 focus:outline-none uppercase font-mono">
+        <button onclick="app.searchFolioStatus()" class="bg-gimtrac-700 hover:bg-gimtrac-800 text-white px-4 py-2 rounded-xl font-bold text-xs shadow-sm transition-all flex items-center space-x-1">
+          <i class="fa-solid fa-search"></i>
+          <span>Buscar</span>
+        </button>
+      </div>
+
+      <!-- Status Card Display Canvas -->
+      <div id="statusResultContainer" class="space-y-3">
+        <!-- Initial empty placeholder -->
+        <div class="bg-slate-100 border border-slate-200 rounded-2xl p-6 text-center text-slate-500 space-y-2">
+          <i class="fa-solid fa-receipt text-3xl text-slate-400"></i>
+          <p class="text-xs font-semibold">Escribe tu folio de seguimiento arriba para consultar la información.</p>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ==================== SCREEN MIS SUGERENCIAS (Colaborador List) ==================== -->
+    <div id="screen_mis_sugerencias" class="screen-fade space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+        <div class="flex items-center space-x-2">
+          <div class="bg-gimtrac-700 text-white p-2 rounded-lg text-xs">
+            <i class="fa-solid fa-clipboard-list"></i>
+          </div>
+          <div>
+            <h2 class="font-extrabold text-slate-800 text-base">MIS SUGERENCIAS</h2>
+            <p class="text-[11px] text-slate-500">Historial enviado desde este dispositivo</p>
+          </div>
+        </div>
+        <button onclick="app.navigateTo('colaborador_menu')" class="text-xs text-slate-400 hover:text-slate-700">
+          <i class="fa-solid fa-xmark text-base"></i>
+        </button>
+      </div>
+
+      <div id="misSugerenciasList" class="space-y-2 max-h-[500px] overflow-y-auto pr-1">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+
+
+    <!-- ==================== SCREEN 7: BASE DE DATOS / PANEL DE CONTROL ADMIN ==================== -->
+    <div id="screen_admin_dashboard" class="screen-fade space-y-5 w-full">
+      
+      <!-- Admin Top Header -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="bg-slate-800 text-white text-xs font-bold px-2.5 py-1 rounded-lg">ADMIN</span>
+            <h1 class="font-extrabold text-slate-800 text-lg sm:text-xl">PANEL DE CONTROL DEL ADMINISTRADOR</h1>
+          </div>
+          <p class="text-xs text-slate-500 mt-0.5">Gestión integral de encuestas y sugerencias de mejora continua</p>
+        </div>
+
+        <div class="flex items-center space-x-2 w-full md:w-auto">
+          <button onclick="app.exportDataCSV()" class="flex-1 md:flex-none bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-bold px-3 py-2 rounded-xl transition-all flex items-center justify-center space-x-1.5">
+            <i class="fa-solid fa-file-csv text-gimtrac-700"></i>
+            <span>Exportar CSV</span>
+          </button>
+          <button onclick="app.logout()" class="flex-1 md:flex-none bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-xs font-bold px-3 py-2 rounded-xl transition-all flex items-center justify-center space-x-1.5">
+            <i class="fa-solid fa-power-off"></i>
+            <span>Salir</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI Summary Cards Grid -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div class="bg-white border border-slate-200 rounded-2xl p-3.5 shadow-sm">
+          <div class="flex items-center justify-between text-slate-500">
+            <span class="text-xs font-bold uppercase tracking-wider">Total Recibidas</span>
+            <i class="fa-solid fa-folder-open text-slate-400"></i>
+          </div>
+          <p id="kpiTotal" class="text-2xl font-extrabold text-slate-800 mt-1">0</p>
+        </div>
+
+        <div class="bg-white border border-slate-200 rounded-2xl p-3.5 shadow-sm">
+          <div class="flex items-center justify-between text-amber-600">
+            <span class="text-xs font-bold uppercase tracking-wider">Pendientes</span>
+            <i class="fa-solid fa-clock"></i>
+          </div>
+          <p id="kpiPendientes" class="text-2xl font-extrabold text-amber-600 mt-1">0</p>
+        </div>
+
+        <div class="bg-white border border-slate-200 rounded-2xl p-3.5 shadow-sm">
+          <div class="flex items-center justify-between text-blue-600">
+            <span class="text-xs font-bold uppercase tracking-wider">En Proceso</span>
+            <i class="fa-solid fa-spinner"></i>
+          </div>
+          <p id="kpiEnProceso" class="text-2xl font-extrabold text-blue-600 mt-1">0</p>
+        </div>
+
+        <div class="bg-white border border-slate-200 rounded-2xl p-3.5 shadow-sm">
+          <div class="flex items-center justify-between text-gimtrac-700">
+            <span class="text-xs font-bold uppercase tracking-wider">Resueltas</span>
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+          <p id="kpiResueltas" class="text-2xl font-extrabold text-gimtrac-700 mt-1">0</p>
+        </div>
+      </div>
+
+      <!-- Filters & Live Search Bar -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
+        <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 text-xs">
+          
+          <!-- Search input -->
+          <div class="relative flex-1">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </span>
+            <input type="text" id="adminSearchInput" oninput="app.renderAdminTable()" placeholder="Buscar por Folio, Título, Descripción o Remitente..." class="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gimtrac-700 focus:outline-none">
+          </div>
+
+          <!-- Dropdown Filters -->
+          <div class="flex flex-wrap items-center gap-2">
+            <select id="filterOrigin" onchange="app.renderAdminTable()" class="px-2.5 py-2 border border-slate-300 rounded-xl bg-white font-semibold text-slate-700 focus:outline-none">
+              <option value="all">Origen: Todos</option>
+              <option value="Cliente">Cliente</option>
+              <option value="Colaborador">Colaborador</option>
+            </select>
+
+            <select id="filterSucursal" onchange="app.renderAdminTable()" class="px-2.5 py-2 border border-slate-300 rounded-xl bg-white font-semibold text-slate-700 focus:outline-none">
+              <option value="all">Sucursal: Todas</option>
+              <option value="Puebla">Puebla</option>
+              <option value="CDMX">CDMX</option>
+              <option value="Guadalajara">Guadalajara</option>
+              <option value="Monterrey">Monterrey</option>
+              <option value="Querétaro">Querétaro</option>
+              <option value="Veracruz">Veracruz</option>
+            </select>
+
+            <select id="filterStatus" onchange="app.renderAdminTable()" class="px-2.5 py-2 border border-slate-300 rounded-xl bg-white font-semibold text-slate-700 focus:outline-none">
+              <option value="all">Estatus: Todos</option>
+              <option value="Pendiente">Pendiente</option>
+              <option value="En Proceso">En Proceso</option>
+              <option value="Resuelto">Resuelto</option>
+              <option value="Rechazado">Rechazado</option>
+            </select>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Data Table Section -->
+      <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-slate-100 text-slate-700 font-bold uppercase tracking-wider border-b border-slate-200">
+                <th class="p-3">Folio ID</th>
+                <th class="p-3">Origen</th>
+                <th class="p-3">Sucursal</th>
+                <th class="p-3">Categoría</th>
+                <th class="p-3">Prioridad</th>
+                <th class="p-3">Fecha</th>
+                <th class="p-3">Título / Descripción</th>
+                <th class="p-3">Estatus</th>
+                <th class="p-3 text-right">Acción</th>
+              </tr>
+            </thead>
+            <tbody id="adminTableBody" class="divide-y divide-slate-200 text-slate-700">
+              <!-- Rows populated via Javascript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- MODAL: SUCCESS FOLIO GENERATED -->
+  <div id="modalFolioSuccess" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl border border-slate-100 screen-fade">
+      <div class="w-16 h-16 bg-gimtrac-100 text-gimtrac-700 rounded-full flex items-center justify-center mx-auto text-3xl shadow-inner">
+        <i class="fa-solid fa-circle-check"></i>
+      </div>
+      
+      <div>
+        <h3 class="text-xl font-extrabold text-slate-800">¡Sugerencia Enviada!</h3>
+        <p class="text-xs text-slate-500 mt-1">Agradecemos tu contribución al programa de Mejora Continua GIMTRAC.</p>
+      </div>
+
+      <div class="bg-slate-100 border-2 border-dashed border-gimtrac-600 rounded-2xl p-4 space-y-1">
+        <span class="text-[10px] uppercase font-bold text-slate-500">Tu Folio de Seguimiento</span>
+        <p id="modalGeneratedFolio" class="text-2xl font-extrabold text-gimtrac-800 tracking-wider font-mono">SUG-2026-00101</p>
+      </div>
+
+      <p class="text-[11px] text-slate-500">Guarda este número para consultar la respuesta del Comité en cualquier momento.</p>
+
+      <div class="space-y-2 pt-1">
+        <button onclick="app.copyFolioToClipboard()" class="w-full bg-gimtrac-700 hover:bg-gimtrac-800 text-white font-bold py-2.5 rounded-xl text-xs transition-all flex items-center justify-center space-x-2">
+          <i class="fa-solid fa-copy"></i>
+          <span>Copiar Folio</span>
+        </button>
+        <button onclick="app.closeFolioModalAndCheck()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs transition-all">
+          Ver Estatus de Sugerencia
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- MODAL: ADMIN EDIT / DETALLE DE SUGERENCIA -->
+  <div id="modalAdminManage" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-2xl w-full p-5 max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-100 screen-fade space-y-4">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+        <div class="flex items-center space-x-2">
+          <span class="bg-gimtrac-700 text-white text-xs font-mono font-bold px-2.5 py-1 rounded-lg" id="modalAdminFolio">SUG-2026-00101</span>
+          <h3 class="font-extrabold text-slate-800 text-base">Gestión e Inspección del Comité</h3>
+        </div>
+        <button onclick="app.closeAdminModal()" class="text-slate-400 hover:text-slate-700 p-1">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Detail Read-Only Grid -->
+      <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs space-y-3">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div>
+            <span class="text-[10px] text-slate-400 uppercase font-bold">Origen</span>
+            <p id="modalDetailOrigen" class="font-bold text-slate-800">Cliente</p>
+          </div>
+          <div>
+            <span class="text-[10px] text-slate-400 uppercase font-bold">Sucursal</span>
+            <p id="modalDetailSucursal" class="font-bold text-slate-800">Puebla</p>
+          </div>
+          <div>
+            <span class="text-[10px] text-slate-400 uppercase font-bold">Categoría</span>
+            <p id="modalDetailCategoria" class="font-bold text-slate-800">Atención</p>
+          </div>
+          <div>
+            <span class="text-[10px] text-slate-400 uppercase font-bold">Fecha Envío</span>
+            <p id="modalDetailFecha" class="font-bold text-slate-800">2026-10-02</p>
+          </div>
+        </div>
+
+        <div id="modalDetailColabExtra" class="hidden bg-white p-2.5 rounded-xl border border-slate-200 text-slate-700">
+          <p class="font-bold text-slate-800">Colaborador: <span id="modalDetailColabName">Juan Perez</span></p>
+          <p class="text-[11px] text-slate-500">Puesto: <span id="modalDetailColabPuesto">Técnico</span> | Depto: <span id="modalDetailColabDepto">Taller</span></p>
+        </div>
+
+        <div>
+          <span class="text-[10px] text-slate-400 uppercase font-bold">Título</span>
+          <p id="modalDetailTitle" class="font-bold text-slate-900 text-sm">Lentitud en caja</p>
+        </div>
+
+        <div>
+          <span class="text-[10px] text-slate-400 uppercase font-bold">Descripción</span>
+          <p id="modalDetailDescription" class="text-slate-700 leading-relaxed bg-white p-2.5 rounded-xl border border-slate-200 mt-1">Detalle...</p>
+        </div>
+
+        <!-- Evidence attachment if present -->
+        <div id="modalDetailEvidenceBox" class="hidden">
+          <span class="text-[10px] text-slate-400 uppercase font-bold">Evidencia Adjunta</span>
+          <div class="mt-1 flex items-center space-x-2 bg-white p-2 rounded-xl border border-slate-200">
+            <img id="modalDetailEvidenceImg" src="" alt="Evidencia" class="h-16 w-16 object-cover rounded-lg border">
+            <span class="text-slate-600 font-semibold text-[11px]">Imagen adjuntada por el emisor</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Admin Editable Management Form -->
+      <form onsubmit="app.saveAdminManagement(event)" class="space-y-3 text-xs">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Estatus *</label>
+            <select id="modalAdminStatus" class="w-full px-2.5 py-2 border border-slate-300 rounded-xl font-bold bg-white focus:outline-none">
+              <option value="Pendiente">Pendiente</option>
+              <option value="En Proceso">En Proceso</option>
+              <option value="Resuelto">Resuelto</option>
+              <option value="Rechazado">Rechazado</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Prioridad *</label>
+            <select id="modalAdminPriority" class="w-full px-2.5 py-2 border border-slate-300 rounded-xl font-bold bg-white focus:outline-none">
+              <option value="Alta">Alta</option>
+              <option value="Media">Media</option>
+              <option value="Baja">Baja</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Fecha Compromiso</label>
+            <input type="date" id="modalAdminCommitmentDate" class="w-full px-2.5 py-2 border border-slate-300 rounded-xl bg-white focus:outline-none">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Responsable del Seguimiento</label>
+          <input type="text" id="modalAdminResponsible" placeholder="Ej. Ing. Juan Pérez / Depto. Operaciones" class="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none">
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Respuesta Oficial del Comité / Evidencia de Cierre</label>
+          <textarea id="modalAdminResponse" rows="3" placeholder="Escribe la solución implementada o comentarios que podrá visualizar el emisor..." class="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none"></textarea>
+        </div>
+
+        <div class="flex items-center justify-end space-x-2 pt-2 border-t border-slate-200">
+          <button type="button" onclick="app.closeAdminModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl">
+            Cancelar
+          </button>
+          <button type="submit" class="px-5 py-2 bg-gimtrac-700 hover:bg-gimtrac-800 text-white font-bold rounded-xl shadow-md transition-all flex items-center space-x-1.5">
+            <i class="fa-solid fa-floppy-disk"></i>
+            <span>Guardar Cambios</span>
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+
+  <!-- TOAST NOTIFICATION FLOATING BANNER -->
+  <div id="toastNotification" class="fixed bottom-5 right-5 z-50 hidden bg-slate-800 text-white px-4 py-3 rounded-2xl shadow-xl flex items-center space-x-3 text-xs border border-slate-700 screen-fade">
+    <i id="toastIcon" class="fa-solid fa-circle-info text-gimtrac-500 text-lg"></i>
+    <span id="toastMessage" class="font-semibold">Notificación</span>
+  </div>
+
+
+  <!-- MAIN APPLICATION JAVASCRIPT LOGIC -->
+  <script>
+    // Initial Seed Data for immediate functionality
+    const INITIAL_SEED_SUGGESTIONS = [
+      {
+        id: "SUG-2026-00101",
+        origen: "Cliente",
+        title: "Lentitud en el proceso de facturación en caja",
+        category: "Atención al cliente",
+        sucursal: "Puebla",
+        colaboradorName: "",
+        colaboradorPuesto: "",
+        colaboradorDepto: "",
+        description: "El cliente reporta demoras de más de 20 minutos para la generación de factura electrónica en el mostrador de ventas durante horas pico.",
+        evidenceImage: "https://placehold.co/400x300/e2e8f0/1e293b?text=Evidencia+Factura",
+        date: "2026-09-28",
+        status: "En Proceso",
+        priority: "Alta",
+        responsible: "Juan Pérez (Gerente de Caja)",
+        commitmentDate: "2026-10-15",
+        response: "Se autorizó la instalación de una segunda terminal de facturación rápida y capacitación del personal."
+      },
+      {
+        id: "SUG-2026-00102",
+        origen: "Colaborador",
+        title: "Mantenimiento Preventivo al Aire Acondicionado en Taller",
+        category: "Instalaciones",
+        sucursal: "CDMX",
+        colaboradorName: "Roberto Gómez",
+        colaboradorPuesto: "Mecánico Agrícola Senior",
+        colaboradorDepto: "Servicio Técnico",
+        description: "El sistema de ventilación del taller central requiere reemplazo de filtros debido a la acumulación de polvo agrícola.",
+        evidenceImage: null,
+        date: "2026-09-25",
+        status: "Resuelto",
+        priority: "Media",
+        responsible: "Depto. Mantenimiento",
+        commitmentDate: "2026-09-30",
+        response: "Mantenimiento ejecutado exitosamente el 29 de septiembre. Se sustituyeron filtros HEPA."
+      },
+      {
+        id: "SUG-2026-00103",
+        origen: "Cliente",
+        title: "Disponibilidad de stock para refacciones Serie 6M",
+        category: "Calidad de Producto",
+        sucursal: "Guadalajara",
+        colaboradorName: "",
+        colaboradorPuesto: "",
+        colaboradorDepto: "",
+        description: "Se sugiere mantener mayor número de refacciones de alta rotación para tractores 6M en mostrador directo.",
+        evidenceImage: null,
+        date: "2026-10-01",
+        status: "Pendiente",
+        priority: "Alta",
+        responsible: "Sin Asignar",
+        commitmentDate: "",
+        response: ""
+      },
+      {
+        id: "SUG-2026-00104",
+        origen: "Colaborador",
+        title: "Digitalización de hojas de servicio en tabletas",
+        category: "Procesos internos",
+        sucursal: "Monterrey",
+        colaboradorName: "Laura Esquivel",
+        colaboradorPuesto: "Coordinadora de Operaciones",
+        colaboradorDepto: "Sistemas & Logística",
+        description: "Implementar app móvil en campo para que los técnicos recopilen firma del cliente en tableta sin imprimir papel.",
+        evidenceImage: null,
+        date: "2026-09-20",
+        status: "En Proceso",
+        priority: "Media",
+        responsible: "Ing. Sofía Martínez (TI)",
+        commitmentDate: "2026-11-01",
+        response: "Proyecto aprobado por el comité. En fase de pruebas con 3 técnicos de campo en Monterrey."
+      },
+      {
+        id: "SUG-2026-00105",
+        origen: "Cliente",
+        title: "Felicitación por excelente asesoría en fertilizantes",
+        category: "Atención al cliente",
+        sucursal: "Querétaro",
+        colaboradorName: "",
+        colaboradorPuesto: "",
+        colaboradorDepto: "",
+        description: "Quiero reconocer la atención brindada por el Ing. Carlos durante mi compra de agroquímicos.",
+        evidenceImage: null,
+        date: "2026-09-18",
+        status: "Resuelto",
+        priority: "Baja",
+        responsible: "Recursos Humanos",
+        commitmentDate: "2026-09-22",
+        response: "Agradecimiento transmitido al colaborador y felicitación registrada en su expediente."
+      }
+    ];
+
+    // Main App Controller
+    class GimtracApp {
+      constructor() {
+        this.currentScreen = 'select_profile';
+        this.currentDeviceMode = 'mobile'; // 'mobile' or 'desktop'
+        this.currentProfile = 'guest'; // 'guest', 'cliente', 'colaborador', 'admin'
+        this.colaboradorInfo = { name: '', sucursal: 'Puebla', puesto: '' };
+        this.uploadedFileBase64 = null;
+        this.activeFormOrigin = 'cliente';
+        this.currentManagingId = null;
+
+        this.initData();
+      }
+
+      // Initialize Data Storage
+      initData() {
+        if (!localStorage.getItem('gimtrac_suggestions')) {
+          localStorage.setItem('gimtrac_suggestions', JSON.stringify(INITIAL_SEED_SUGGESTIONS));
+        }
+        // Load stored colaborador info if exists
+        const storedColab = localStorage.getItem('gimtrac_colab_info');
+        if (storedColab) {
+          try {
+            this.colaboradorInfo = JSON.parse(storedColab);
+          } catch (e) {}
+        }
+      }
+
+      getSuggestions() {
+        return JSON.parse(localStorage.getItem('gimtrac_suggestions') || '[]');
+      }
+
+      saveSuggestions(data) {
+        localStorage.setItem('gimtrac_suggestions', JSON.stringify(data));
+      }
+
+      setDeviceMode(mode) {
+        this.currentDeviceMode = mode;
+        const frame = document.getElementById('mobileFrame');
+        const btnMobile = document.getElementById('btnModeMobile');
+        const btnDesktop = document.getElementById('btnModeDesktop');
+
+        if (mode === 'desktop') {
+          frame.className = "w-full max-w-6xl min-h-[700px] bg-white rounded-3xl shadow-xl p-6 border border-slate-200 transition-all my-4";
+          document.querySelector('.mobile-notch').classList.add('hidden');
+          btnMobile.className = "px-2.5 py-1.5 rounded-lg flex items-center space-x-1.5 transition-all text-slate-500 hover:text-slate-800";
+          btnDesktop.className = "px-2.5 py-1.5 rounded-lg flex items-center space-x-1.5 transition-all bg-white text-slate-800 shadow-sm font-bold";
+        } else {
+          frame.className = "mobile-frame flex flex-col my-2";
+          document.querySelector('.mobile-notch').classList.remove('hidden');
+          btnMobile.className = "px-2.5 py-1.5 rounded-lg flex items-center space-x-1.5 transition-all bg-white text-slate-800 shadow-sm font-bold";
+          btnDesktop.className = "px-2.5 py-1.5 rounded-lg flex items-center space-x-1.5 transition-all text-slate-500 hover:text-slate-800";
+        }
+      }
+
+      selectProfile(profileType) {
+        this.currentProfile = profileType;
+        this.updateHeaderBadge();
+
+        if (profileType === 'cliente') {
+          this.navigateTo('client_menu');
+        } else if (profileType === 'colaborador') {
+          this.navigateTo('colaborador_menu');
+          this.populateColabInputs();
+        } else if (profileType === 'admin') {
+          this.navigateTo('admin_login');
+        }
+      }
+
+      updateHeaderBadge() {
+        const badgeMobile = document.getElementById('mobileProfileBadge');
+        const userBadgeContainer = document.getElementById('userBadgeContainer');
+        const userBadgeText = document.getElementById('userBadgeText');
+
+        let text = "Invitado";
+        if (this.currentProfile === 'cliente') text = "Perfil Cliente";
+        if (this.currentProfile === 'colaborador') text = "Perfil Colaborador";
+        if (this.currentProfile === 'admin') text = "Admin Comité";
+
+        badgeMobile.textContent = text;
+        userBadgeText.textContent = text;
+
+        if (this.currentProfile !== 'guest') {
+          userBadgeContainer.classList.remove('hidden');
+          userBadgeContainer.classList.add('flex');
+        } else {
+          userBadgeContainer.classList.add('hidden');
+        }
+      }
+
+      logout() {
+        this.currentProfile = 'guest';
+        this.updateHeaderBadge();
+        this.navigateTo('select_profile');
+        this.showToast('Sesión finalizada', 'info');
+      }
+
+      // Navigation handler between templates
+      navigateTo(screenId) {
+        this.currentScreen = screenId;
+        const canvas = document.getElementById('mobileCanvas');
+        const template = document.getElementById(`screen_${screenId}`);
+
+        if (template) {
+          canvas.innerHTML = template.outerHTML;
+          // Clean ID duplication inside canvas
+          const activeScreenNode = canvas.firstElementChild;
+          activeScreenNode.id = `active_screen_${screenId}`;
+        }
+
+        // Screen specific hooks
+        if (screenId === 'colaborador_menu') {
+          this.populateColabInputs();
+        } else if (screenId === 'admin_dashboard') {
+          this.renderAdminDashboard();
+        } else if (screenId === 'mis_sugerencias') {
+          this.renderMisSugerencias();
+        }
+      }
+
+      saveColabData() {
+        const name = document.getElementById('colabNameInput')?.value || '';
+        const sucursal = document.getElementById('colabSucursalInput')?.value || 'Puebla';
+        const puesto = document.getElementById('colabPuestoInput')?.value || '';
+
+        this.colaboradorInfo = { name, sucursal, puesto };
+        localStorage.setItem('gimtrac_colab_info', JSON.stringify(this.colaboradorInfo));
+      }
+
+      populateColabInputs() {
+        const nameInput = document.getElementById('colabNameInput');
+        const sucursalInput = document.getElementById('colabSucursalInput');
+        const puestoInput = document.getElementById('colabPuestoInput');
+
+        if (nameInput) nameInput.value = this.colaboradorInfo.name || '';
+        if (sucursalInput) sucursalInput.value = this.colaboradorInfo.sucursal || 'Puebla';
+        if (puestoInput) puestoInput.value = this.colaboradorInfo.puesto || '';
+      }
+
+      openForm(originType) {
+        this.navigateTo('form_suggestion');
+        this.setFormOrigin(originType);
+      }
+
+      setFormOrigin(originType) {
+        this.activeFormOrigin = originType;
+        const btnCliente = document.getElementById('btnOriginCliente');
+        const btnColaborador = document.getElementById('btnOriginColaborador');
+        const colabSection = document.getElementById('colaboradorFieldsSection');
+        const subtitle = document.getElementById('formOriginSubtitle');
+
+        if (originType === 'cliente') {
+          btnCliente.className = "flex-1 py-1.5 rounded-lg text-center transition-all bg-white text-gimtrac-800 shadow-sm font-bold";
+          btnColaborador.className = "flex-1 py-1.5 rounded-lg text-center transition-all text-slate-500 hover:text-slate-800 font-semibold";
+          colabSection.classList.add('hidden');
+          subtitle.textContent = "Perfil: Cliente";
+        } else {
+          btnColaborador.className = "flex-1 py-1.5 rounded-lg text-center transition-all bg-white text-gimtrac-800 shadow-sm font-bold";
+          btnCliente.className = "flex-1 py-1.5 rounded-lg text-center transition-all text-slate-500 hover:text-slate-800 font-semibold";
+          colabSection.classList.remove('hidden');
+          subtitle.textContent = "Perfil: Colaborador (Interno)";
+
+          // Pre-fill employee info if available
+          const nameField = document.getElementById('formColabName');
+          if (nameField && this.colaboradorInfo.name) {
+            nameField.value = this.colaboradorInfo.name;
+          }
+        }
+      }
+
+      backFromForm() {
+        if (this.currentProfile === 'colaborador') {
+          this.navigateTo('colaborador_menu');
+        } else {
+          this.navigateTo('client_menu');
+        }
+      }
+
+      backToCurrentMenu() {
+        if (this.currentProfile === 'admin') {
+          this.navigateTo('admin_dashboard');
+        } else if (this.currentProfile === 'colaborador') {
+          this.navigateTo('colaborador_menu');
+        } else {
+          this.navigateTo('client_menu');
+        }
+      }
+
+      handleFileSelect(e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            this.uploadedFileBase64 = event.target.result;
+            document.getElementById('fileUploadPlaceholder').classList.add('hidden');
+            const preview = document.getElementById('fileUploadPreview');
+            preview.classList.remove('hidden');
+            document.getElementById('previewImage').src = event.target.result;
+            document.getElementById('previewFileName').textContent = file.name;
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+
+      removeFile(e) {
+        e.stopPropagation();
+        this.uploadedFileBase64 = null;
+        document.getElementById('formFileInput').value = '';
+        document.getElementById('fileUploadPlaceholder').classList.remove('hidden');
+        document.getElementById('fileUploadPreview').classList.add('hidden');
+      }
+
+      submitSuggestion(e) {
+        e.preventDefault();
+
+        const title = document.getElementById('formTitle').value.trim();
+        const category = document.getElementById('formCategory').value;
+        const sucursal = document.getElementById('formSucursal').value;
+        const description = document.getElementById('formDescription').value.trim();
+
+        let colabName = "";
+        let colabPuesto = "";
+        let colabDepto = "";
+
+        if (this.activeFormOrigin === 'colaborador') {
+          colabName = document.getElementById('formColabName').value.trim();
+          colabPuesto = document.getElementById('formColabPuesto').value.trim();
+          colabDepto = document.getElementById('formColabDepto').value.trim();
+
+          if (!colabName) {
+            this.showToast('Por favor ingresa tu nombre de colaborador', 'warning');
+            return;
+          }
+        }
+
+        // Generate unique Folio
+        const nextNumber = Math.floor(10000 + Math.random() * 90000);
+        const folio = `SUG-2026-${nextNumber}`;
+        const todayStr = new Date().toISOString().split('T')[0];
+
+        const newEntry = {
+          id: folio,
+          origen: this.activeFormOrigin === 'colaborador' ? 'Colaborador' : 'Cliente',
+          title: title,
+          category: category,
+          sucursal: sucursal,
+          colaboradorName: colabName,
+          colaboradorPuesto: colabPuesto,
+          colaboradorDepto: colabDepto,
+          description: description,
+          evidenceImage: this.uploadedFileBase64,
+          date: todayStr,
+          status: 'Pendiente',
+          priority: 'Media',
+          responsible: 'Sin Asignar',
+          commitmentDate: '',
+          response: ''
+        };
+
+        const list = this.getSuggestions();
+        list.unshift(newEntry);
+        this.saveSuggestions(list);
+
+        // Show Success Modal
+        document.getElementById('modalGeneratedFolio').textContent = folio;
+        document.getElementById('modalFolioSuccess').classList.remove('hidden');
+        
+        // Reset form file
+        this.uploadedFileBase64 = null;
+      }
+
+      closeFolioModalAndCheck() {
+        document.getElementById('modalFolioSuccess').classList.add('hidden');
+        const folio = document.getElementById('modalGeneratedFolio').textContent;
+        this.navigateTo('check_status');
+        setTimeout(() => {
+          const input = document.getElementById('statusFolioInput');
+          if (input) {
+            input.value = folio;
+            this.searchFolioStatus();
+          }
+        }, 100);
+      }
+
+      copyFolioToClipboard() {
+        const folio = document.getElementById('modalGeneratedFolio').textContent;
+        const tempInput = document.createElement('input');
+        tempInput.value = folio;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+        this.showToast('Folio copiado al portapapeles', 'success');
+      }
+
+      searchFolioStatus() {
+        const query = (document.getElementById('statusFolioInput')?.value || '').trim().toUpperCase();
+        const container = document.getElementById('statusResultContainer');
+
+        if (!query) {
+          this.showToast('Ingresa un número de folio', 'warning');
+          return;
+        }
+
+        const suggestions = this.getSuggestions();
+        const found = suggestions.find(s => s.id.toUpperCase() === query);
+
+        if (!found) {
+          container.innerHTML = `
+            <div class="bg-red-50 border border-red-200 rounded-2xl p-5 text-center text-red-700 space-y-2">
+              <i class="fa-solid fa-circle-xmark text-3xl text-red-500"></i>
+              <p class="font-bold text-sm">No se encontró el folio "${query}"</p>
+              <p class="text-xs text-slate-500">Verifica que el número coincida exactamente con el entregado (Ej. SUG-2026-00101).</p>
+            </div>
+          `;
+          return;
+        }
+
+        // Status badge colors
+        let statusBadgeClass = "bg-amber-100 text-amber-800 border-amber-300";
+        if (found.status === 'En Proceso') statusBadgeClass = "bg-blue-100 text-blue-800 border-blue-300";
+        if (found.status === 'Resuelto') statusBadgeClass = "bg-green-100 text-gimtrac-800 border-green-300";
+        if (found.status === 'Rechazado') statusBadgeClass = "bg-slate-200 text-slate-800 border-slate-300";
+
+        // Priority badge
+        let priorityBadgeClass = "bg-slate-100 text-slate-700";
+        if (found.priority === 'Alta') priorityBadgeClass = "bg-red-100 text-red-800 font-bold";
+        if (found.priority === 'Media') priorityBadgeClass = "bg-amber-100 text-amber-800";
+
+        container.innerHTML = `
+          <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3 text-xs">
+            
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
+              <div>
+                <span class="font-mono font-extrabold text-sm text-gimtrac-800">${found.id}</span>
+                <span class="ml-2 text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-semibold">${found.origen}</span>
+              </div>
+              <span class="px-2.5 py-1 rounded-full text-[11px] font-extrabold border ${statusBadgeClass}">
+                ${found.status}
+              </span>
+            </div>
+
+            <div>
+              <h3 class="font-bold text-slate-900 text-sm">${found.title}</h3>
+              <p class="text-slate-600 mt-1 leading-relaxed bg-slate-50 p-2.5 rounded-xl border border-slate-100">${found.description}</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 text-[11px] bg-slate-50 p-2.5 rounded-xl">
+              <div>
+                <span class="text-slate-400 block font-semibold">Sucursal / Categoría</span>
+                <span class="font-bold text-slate-700">${found.sucursal} · ${found.category}</span>
+              </div>
+              <div>
+                <span class="text-slate-400 block font-semibold">Prioridad</span>
+                <span class="px-2 py-0.5 rounded text-[10px] ${priorityBadgeClass}">${found.priority}</span>
+              </div>
+              <div>
+                <span class="text-slate-400 block font-semibold">Fecha de envío</span>
+                <span class="font-bold text-slate-700">${found.date}</span>
+              </div>
+              <div>
+                <span class="text-slate-400 block font-semibold">Responsable</span>
+                <span class="font-bold text-slate-700">${found.responsible || 'Por asignar'}</span>
+              </div>
+            </div>
+
+            ${found.commitmentDate ? `
+              <div class="flex items-center space-x-2 text-[11px] bg-blue-50 text-blue-800 p-2 rounded-lg border border-blue-200">
+                <i class="fa-solid fa-calendar-check text-blue-600"></i>
+                <span>Fecha compromiso de resolución: <strong>${found.commitmentDate}</strong></span>
+              </div>
+            ` : ''}
+
+            <!-- Response from Committee -->
+            <div class="border-t border-slate-200 pt-3">
+              <span class="font-bold text-slate-800 text-[11px] flex items-center space-x-1 mb-1">
+                <i class="fa-solid fa-comments text-gimtrac-700"></i>
+                <span>Respuesta Oficial del Comité de Mejora:</span>
+              </span>
+              ${found.response ? `
+                <div class="bg-gimtrac-50 border border-gimtrac-200 text-gimtrac-900 p-3 rounded-xl font-medium leading-relaxed">
+                  ${found.response}
+                </div>
+              ` : `
+                <p class="text-slate-400 italic text-[11px]">Tu sugerencia está siendo revisada por el equipo de Mejora Continua. Próximamente se publicará la respuesta aquí.</p>
+              `}
+            </div>
+
+          </div>
+        `;
+      }
+
+      renderMisSugerencias() {
+        const container = document.getElementById('misSugerenciasList');
+        const list = this.getSuggestions().filter(s => s.origen === 'Colaborador');
+
+        if (list.length === 0) {
+          container.innerHTML = `
+            <div class="text-center p-6 bg-slate-50 border border-slate-200 rounded-2xl text-slate-400 text-xs">
+              No has enviado sugerencias en esta sesión.
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = list.map(item => `
+          <div onclick="app.quickCheckFolio('${item.id}')" class="bg-white hover:bg-slate-50 border border-slate-200 p-3 rounded-xl text-xs space-y-1 cursor-pointer transition-all">
+            <div class="flex items-center justify-between">
+              <span class="font-mono font-bold text-gimtrac-800">${item.id}</span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${item.status === 'Resuelto' ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'}">${item.status}</span>
+            </div>
+            <p class="font-bold text-slate-800 truncate">${item.title}</p>
+            <p class="text-[10px] text-slate-400">${item.date} · ${item.sucursal}</p>
+          </div>
+        `).join('');
+      }
+
+      quickCheckFolio(folio) {
+        this.navigateTo('check_status');
+        setTimeout(() => {
+          const input = document.getElementById('statusFolioInput');
+          if (input) {
+            input.value = folio;
+            this.searchFolioStatus();
+          }
+        }, 100);
+      }
+
+      handleAdminLogin(e) {
+        e.preventDefault();
+        const u = document.getElementById('adminUser').value.trim();
+        const p = document.getElementById('adminPass').value.trim();
+
+        if (u === 'admin' && p === 'admin123') {
+          this.currentProfile = 'admin';
+          this.updateHeaderBadge();
+          this.navigateTo('admin_dashboard');
+          this.showToast('Bienvenido al Panel de Administración', 'success');
+        } else {
+          document.getElementById('loginError').classList.remove('hidden');
+        }
+      }
+
+      renderAdminDashboard() {
+        // Automatically switch to Desktop Full Screen Mode when entering Admin Dashboard for best usability
+        if (this.currentDeviceMode === 'mobile') {
+          this.setDeviceMode('desktop');
+        }
+
+        const suggestions = this.getSuggestions();
+
+        // Calculate KPIs
+        const total = suggestions.length;
+        const pendientes = suggestions.filter(s => s.status === 'Pendiente').length;
+        const enProceso = suggestions.filter(s => s.status === 'En Proceso').length;
+        const resueltas = suggestions.filter(s => s.status === 'Resuelto').length;
+
+        document.getElementById('kpiTotal').textContent = total;
+        document.getElementById('kpiPendientes').textContent = pendientes;
+        document.getElementById('kpiEnProceso').textContent = enProceso;
+        document.getElementById('kpiResueltas').textContent = resueltas;
+
+        this.renderAdminTable();
+      }
+
+      renderAdminTable() {
+        const query = (document.getElementById('adminSearchInput')?.value || '').toLowerCase();
+        const filterOrigin = document.getElementById('filterOrigin')?.value || 'all';
+        const filterSucursal = document.getElementById('filterSucursal')?.value || 'all';
+        const filterStatus = document.getElementById('filterStatus')?.value || 'all';
+
+        let list = this.getSuggestions();
+
+        // Apply Filters
+        if (filterOrigin !== 'all') list = list.filter(s => s.origen === filterOrigin);
+        if (filterSucursal !== 'all') list = list.filter(s => s.sucursal === filterSucursal);
+        if (filterStatus !== 'all') list = list.filter(s => s.status === filterStatus);
+
+        if (query) {
+          list = list.filter(s => 
+            s.id.toLowerCase().includes(query) ||
+            s.title.toLowerCase().includes(query) ||
+            s.description.toLowerCase().includes(query) ||
+            (s.colaboradorName && s.colaboradorName.toLowerCase().includes(query))
+          );
+        }
+
+        const tbody = document.getElementById('adminTableBody');
+        if (!tbody) return;
+
+        if (list.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="9" class="p-6 text-center text-slate-400 italic">
+                No se encontraron registros que coincidan con los filtros aplicados.
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        tbody.innerHTML = list.map(item => {
+          let statusColor = "bg-amber-100 text-amber-800";
+          if (item.status === 'En Proceso') statusColor = "bg-blue-100 text-blue-800";
+          if (item.status === 'Resuelto') statusColor = "bg-green-100 text-gimtrac-800 font-bold";
+          if (item.status === 'Rechazado') statusColor = "bg-slate-200 text-slate-700";
+
+          let priorityColor = "bg-slate-100 text-slate-600";
+          if (item.priority === 'Alta') priorityColor = "bg-red-100 text-red-800 font-bold";
+          if (item.priority === 'Media') priorityColor = "bg-amber-100 text-amber-800";
+
+          return `
+            <tr class="hover:bg-slate-50 transition-colors border-b border-slate-100">
+              <td class="p-3 font-mono font-extrabold text-gimtrac-800">${item.id}</td>
+              <td class="p-3">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold ${item.origen === 'Colaborador' ? 'bg-purple-100 text-purple-800' : 'bg-blue-50 text-blue-800'}">
+                  ${item.origen}
+                </span>
+              </td>
+              <td class="p-3 font-medium">${item.sucursal}</td>
+              <td class="p-3 text-slate-600">${item.category}</td>
+              <td class="p-3">
+                <span class="px-2 py-0.5 rounded text-[10px] ${priorityColor}">${item.priority}</span>
+              </td>
+              <td class="p-3 text-slate-500 whitespace-nowrap">${item.date}</td>
+              <td class="p-3 max-w-xs truncate">
+                <span class="font-bold text-slate-800 block truncate">${item.title}</span>
+                <span class="text-[11px] text-slate-500 truncate block">${item.description}</span>
+              </td>
+              <td class="p-3">
+                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${statusColor}">${item.status}</span>
+              </td>
+              <td class="p-3 text-right whitespace-nowrap">
+                <button onclick="app.openAdminManageModal('${item.id}')" class="bg-gimtrac-700 hover:bg-gimtrac-800 text-white font-bold px-3 py-1.5 rounded-lg text-xs shadow-sm transition-all flex items-center space-x-1 ml-auto">
+                  <i class="fa-solid fa-sliders"></i>
+                  <span>Gestionar</span>
+                </button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      openAdminManageModal(folioId) {
+        this.currentManagingId = folioId;
+        const suggestions = this.getSuggestions();
+        const item = suggestions.find(s => s.id === folioId);
+
+        if (!item) return;
+
+        document.getElementById('modalAdminFolio').textContent = item.id;
+        document.getElementById('modalDetailOrigen').textContent = item.origen;
+        document.getElementById('modalDetailSucursal').textContent = item.sucursal;
+        document.getElementById('modalDetailCategoria').textContent = item.category;
+        document.getElementById('modalDetailFecha').textContent = item.date;
+        document.getElementById('modalDetailTitle').textContent = item.title;
+        document.getElementById('modalDetailDescription').textContent = item.description;
+
+        // Colaborador extra details
+        const colabBox = document.getElementById('modalDetailColabExtra');
+        if (item.origen === 'Colaborador' && item.colaboradorName) {
+          colabBox.classList.remove('hidden');
+          document.getElementById('modalDetailColabName').textContent = item.colaboradorName;
+          document.getElementById('modalDetailColabPuesto').textContent = item.colaboradorPuesto || 'N/D';
+          document.getElementById('modalDetailColabDepto').textContent = item.colaboradorDepto || 'N/D';
+        } else {
+          colabBox.classList.add('hidden');
+        }
+
+        // Evidence
+        const evidenceBox = document.getElementById('modalDetailEvidenceBox');
+        if (item.evidenceImage) {
+          evidenceBox.classList.remove('hidden');
+          document.getElementById('modalDetailEvidenceImg').src = item.evidenceImage;
+        } else {
+          evidenceBox.classList.add('hidden');
+        }
+
+        // Editable form fields
+        document.getElementById('modalAdminStatus').value = item.status;
+        document.getElementById('modalAdminPriority').value = item.priority;
+        document.getElementById('modalAdminCommitmentDate').value = item.commitmentDate || '';
+        document.getElementById('modalAdminResponsible').value = item.responsible || '';
+        document.getElementById('modalAdminResponse').value = item.response || '';
+
+        document.getElementById('modalAdminManage').classList.remove('hidden');
+      }
+
+      closeAdminModal() {
+        document.getElementById('modalAdminManage').classList.add('hidden');
+        this.currentManagingId = null;
+      }
+
+      saveAdminManagement(e) {
+        e.preventDefault();
+        if (!this.currentManagingId) return;
+
+        const list = this.getSuggestions();
+        const index = list.findIndex(s => s.id === this.currentManagingId);
+
+        if (index !== -1) {
+          list[index].status = document.getElementById('modalAdminStatus').value;
+          list[index].priority = document.getElementById('modalAdminPriority').value;
+          list[index].commitmentDate = document.getElementById('modalAdminCommitmentDate').value;
+          list[index].responsible = document.getElementById('modalAdminResponsible').value.trim();
+          list[index].response = document.getElementById('modalAdminResponse').value.trim();
+
+          this.saveSuggestions(list);
+          this.closeAdminModal();
+          this.renderAdminDashboard();
+          this.showToast('Sugerencia actualizada con éxito', 'success');
+        }
+      }
+
+      // Export CSV Data
+      exportDataCSV() {
+        const list = this.getSuggestions();
+        if (list.length === 0) {
+          this.showToast('No hay datos para exportar', 'warning');
+          return;
+        }
+
+        let csvContent = "data:text/csv;charset=utf-8,";
+        csvContent += "Folio,Origen,Sucursal,Categoria,Prioridad,Fecha,Titulo,Estatus,Responsable\n";
+
+        list.forEach(item => {
+          const row = [
+            `"${item.id}"`,
+            `"${item.origen}"`,
+            `"${item.sucursal}"`,
+            `"${item.category}"`,
+            `"${item.priority}"`,
+            `"${item.date}"`,
+            `"${item.title.replace(/"/g, '""')}"`,
+            `"${item.status}"`,
+            `"${(item.responsible || '').replace(/"/g, '""')}"`
+          ].join(",");
+          csvContent += row + "\n";
+        });
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `GIMTRAC_Mejora_Continua_${new Date().toISOString().split('T')[0]}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        this.showToast('Reporte CSV descargado', 'info');
+      }
+
+      showToast(message, type = 'info') {
+        const toast = document.getElementById('toastNotification');
+        const msgEl = document.getElementById('toastMessage');
+        const iconEl = document.getElementById('toastIcon');
+
+        msgEl.textContent = message;
+
+        if (type === 'success') {
+          iconEl.className = 'fa-solid fa-circle-check text-green-400 text-lg';
+        } else if (type === 'warning') {
+          iconEl.className = 'fa-solid fa-triangle-exclamation text-amber-400 text-lg';
+        } else {
+          iconEl.className = 'fa-solid fa-circle-info text-blue-400 text-lg';
+        }
+
+        toast.classList.remove('hidden');
+        setTimeout(() => {
+          toast.classList.add('hidden');
+        }, 3000);
+      }
+    }
+
+    // Global App Instance Initialization
+    let app;
+    window.onload = function() {
+      app = new GimtracApp();
+      app.navigateTo('select_profile');
+    };
+  </script>
+</body>
+</html>
