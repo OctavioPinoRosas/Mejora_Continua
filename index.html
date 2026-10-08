@@ -37,56 +37,14 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #E2E8F0;
+            background-color: #F1F5F9;
             user-select: none;
-        }
-
-        /* Phone frame simulation styles */
-        .phone-container {
-            width: 380px;
-            height: 760px;
-            border-radius: 48px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 12px #0F172A;
-            position: relative;
-            overflow: hidden;
-            background-color: #FFFFFF;
-            transition: all 0.3s ease;
-        }
-
-        .phone-notch {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 140px;
-            height: 25px;
-            background-color: #0F172A;
-            border-bottom-left-radius: 18px;
-            border-bottom-right-radius: 18px;
-            z-index: 50;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .phone-speaker {
-            width: 45px;
-            height: 4px;
-            background-color: #334155;
-            border-radius: 2px;
-        }
-
-        .phone-camera {
-            width: 10px;
-            height: 10px;
-            background-color: #020617;
-            border-radius: 50%;
-            margin-left: 10px;
         }
 
         /* Custom scrollbar */
         .custom-scroll::-webkit-scrollbar {
-            width: 4px;
+            width: 6px;
+            height: 6px;
         }
         .custom-scroll::-webkit-scrollbar-track {
             background: #F1F5F9;
@@ -99,8 +57,8 @@
         .watermark {
             background-image: repeating-linear-gradient(
                 -45deg,
-                rgba(46, 125, 50, 0.03),
-                rgba(46, 125, 50, 0.03) 20px,
+                rgba(46, 125, 50, 0.02),
+                rgba(46, 125, 50, 0.02) 20px,
                 transparent 20px,
                 transparent 40px
             );
@@ -111,77 +69,24 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) rotate(-30deg);
-            font-size: 3.8rem;
+            font-size: clamp(3rem, 10vw, 6rem);
             font-weight: 900;
-            color: rgba(46, 125, 50, 0.04);
+            color: rgba(46, 125, 50, 0.03);
             pointer-events: none;
             white-space: nowrap;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between items-center bg-slate-200 p-2 sm:p-6">
+<body class="min-h-screen flex flex-col justify-between bg-slate-100 text-slate-800 antialiased p-3 sm:p-6">
 
-    <header class="w-full max-w-5xl bg-white rounded-2xl shadow-md p-4 mb-4 flex flex-col md:flex-row justify-between items-center gap-4">
-        <div class="flex items-center gap-3">
-            <div class="bg-gimtrac-green text-white px-3 py-2 rounded-xl text-xl font-black tracking-wider">
-                GIMTRAC
-            </div>
-            <div>
-                <h1 class="font-bold text-slate-800 text-lg leading-tight">Sistema de Mejora Continua</h1>
-                <p class="text-xs text-slate-500">GIMTRAC - Soluciones de Agricultura</p>
-            </div>
-        </div>
-
-        <div class="flex flex-wrap items-center gap-2 text-xs font-medium">
-            <button id="toggle-view-btn" onclick="toggleViewMode()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl border border-slate-300 flex items-center gap-2 transition">
-                <i class="fa-solid fa-mobile-screen"></i>
-                <span id="toggle-view-text">Vista Expandida</span>
-            </button>
-            <button onclick="openFormUrlModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl border border-slate-300 flex items-center gap-2 transition" title="Configurar Enlaces de Google Forms">
-                <i class="fa-solid fa-link text-gimtrac-green"></i>
-                <span>Configurar Forms</span>
-            </button>
-            <button onclick="resetDemoData()" class="bg-rose-50 hover:bg-rose-100 text-rose-600 px-3 py-2 rounded-xl border border-rose-200 flex items-center gap-1.5 transition">
-                <i class="fa-solid fa-rotate-right"></i>
-                <span>Restablecer Datos</span>
-            </button>
-        </div>
-    </header>
-
-    <main id="main-container" class="flex-1 flex justify-center items-center w-full my-auto py-2">
-        
-        <!-- Phone Simulator Frame -->
-        <div id="phone-frame" class="phone-container flex flex-col relative">
-            
-            <!-- Phone Top Notch -->
-            <div class="phone-notch">
-                <div class="phone-speaker"></div>
-                <div class="phone-camera"></div>
-            </div>
-
-            <!-- Phone Top Status Bar -->
-            <div class="pt-8 px-6 pb-2 flex justify-between items-center text-[10px] font-semibold text-slate-500 bg-white z-40 select-none">
-                <span id="current-time">09:41</span>
-                <div class="flex items-center gap-1.5">
-                    <i class="fa-solid fa-signal"></i>
-                    <i class="fa-solid fa-wifi"></i>
-                    <i class="fa-solid fa-battery-full"></i>
-                </div>
-            </div>
-
-            <!-- Internal Dynamic Viewport -->
-            <div id="screen-viewport" class="flex-1 overflow-y-auto custom-scroll relative flex flex-col bg-slate-50">
-                <!-- Dynamic Content via JavaScript -->
-            </div>
-
-            <!-- Bottom Indicator Line for Mobile Simulator -->
-            <div class="h-5 bg-white flex justify-center items-center shrink-0">
-                <div class="w-28 h-1 bg-slate-300 rounded-full"></div>
-            </div>
-
+    <!-- Contenedor Principal Adaptable -->
+    <main id="main-container" class="flex-1 flex justify-center items-center w-full max-w-5xl mx-auto my-auto">
+        <div id="screen-viewport" class="w-full bg-white rounded-3xl shadow-xl border border-slate-200/80 custom-scroll relative flex flex-col overflow-hidden min-h-[550px] transition-all duration-300">
+            <!-- Contenido dinámico mediante JavaScript -->
         </div>
     </main>
 
+    <!-- Modal: Configuración de Links de Google Forms -->
     <div id="modal-url-config" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
             <button onclick="closeModal('modal-url-config')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-2">
@@ -191,7 +96,7 @@
                 <i class="fa-brands fa-google-drive text-2xl"></i>
                 <h3 class="font-bold text-slate-800 text-lg">Enlaces de Google Forms</h3>
             </div>
-            <p class="text-xs text-slate-500 mb-4">Ingresa o edita los enlaces directos de tus cuestionarios creados en Google Forms.</p>
+            <p class="text-xs text-slate-500 mb-4">Ingresa o edita los enlaces directos de tus cuestionarios de sugerencias o encuestas.</p>
             
             <div class="space-y-4 text-sm">
                 <div>
@@ -211,6 +116,7 @@
         </div>
     </div>
 
+    <!-- Modal: Consulta de Folio -->
     <div id="modal-consulta-folio" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
             <button onclick="closeModal('modal-consulta-folio')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-2">
@@ -218,7 +124,7 @@
             </button>
             
             <div class="flex items-center gap-3 mb-3 text-gimtrac-green">
-                <div class="w-10 h-10 rounded-2xl bg-emerald-50 flex items-center justify-center text-gimtrac-green text-xl">
+                <div class="w-10 h-10 rounded-2xl bg-emerald-50 flex items-center justify-center text-gimtrac-green text-xl shrink-0">
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </div>
                 <div>
@@ -244,18 +150,19 @@
                 </div>
             </div>
 
-            <!-- Folio Search Result Box -->
+            <!-- Contenedor del Resultado -->
             <div id="folio-result-container" class="hidden border border-slate-200 rounded-2xl p-4 bg-slate-50 text-xs">
-                <!-- Populated via JS -->
+                <!-- Se llena dinámicamente -->
             </div>
 
             <div id="folio-not-found" class="hidden p-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-2xl text-xs text-center">
                 <i class="fa-solid fa-circle-exclamation text-xl text-amber-500 mb-1 block"></i>
-                <strong>Folio no encontrado.</strong><br>Verifica la clave e intenta nuevamente (ej. CLI-1001).
+                <strong>Folio no encontrado.</strong><br>Verifica el código e intenta nuevamente.
             </div>
         </div>
     </div>
 
+    <!-- Modal: Edición de Admin -->
     <div id="modal-admin-edit" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl relative">
             <button onclick="closeModal('modal-admin-edit')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-2">
@@ -299,29 +206,27 @@
         </div>
     </div>
 
-    <footer class="mt-4 text-center text-xs text-slate-500">
+    <!-- Pie de página -->
+    <footer class="mt-4 text-center text-xs text-slate-500 py-2">
         <p>© 2026 GIMTRAC - Soluciones de Agricultura. Todos los derechos reservados.</p>
     </footer>
 
+    <!-- Lógica de Javascript -->
     <script>
-        // =========================================================================
-        // 📌 ENLACES DIRECTOS DE GOOGLE FORMS
-        // =========================================================================
         let LINK_GOOGLE_FORMS_CLIENTE = "https://docs.google.com/forms/d/e/1FAIpQLScrYCjz32ZVYrlSsUa6g27kkchR9d5OJ-r_p_xSodlIPYl9GA/viewform";
-        let LINK_GOOGLE_FORMS_COLABORADOR = "https://eu.surveymars.com/r/NvtNiyrJOXtEV";
-        // =========================================================================
+        let LINK_GOOGLE_FORMS_COLABORADOR = "https://docs.google.com/forms/d/e/1FAIpQLSfkkAwv265sY_mHbRHQsVsRWs0hM-LJOjGrLFZw0_9ysQN98A/viewform?usp=publish-editor";
 
-        let currentScreen = 'access'; // Options: 'access', 'cliente', 'colaborador', 'admin'
-        let isPhoneView = true;
+        let currentScreen = 'access';
         let isAdminLoggedIn = false;
 
         function initStorage() {
-            // Check or update default URLs
-            const defaultFormUrls = {
-                cliente: LINK_GOOGLE_FORMS_CLIENTE,
-                colaborador: LINK_GOOGLE_FORMS_COLABORADOR
-            };
-            localStorage.setItem('gimtrac_urls', JSON.stringify(defaultFormUrls));
+            if (!localStorage.getItem('gimtrac_urls')) {
+                const defaultFormUrls = {
+                    cliente: LINK_GOOGLE_FORMS_CLIENTE,
+                    colaborador: LINK_GOOGLE_FORMS_COLABORADOR
+                };
+                localStorage.setItem('gimtrac_urls', JSON.stringify(defaultFormUrls));
+            }
 
             if (!localStorage.getItem('gimtrac_folios')) {
                 const sampleFolios = [
@@ -389,14 +294,16 @@
                     };
                 } catch(e) {}
             }
-            return {
-                cliente: LINK_GOOGLE_FORMS_CLIENTE,
-                colaborador: LINK_GOOGLE_FORMS_COLABORADOR
-            };
+            return { cliente: LINK_GOOGLE_FORMS_CLIENTE, colaborador: LINK_GOOGLE_FORMS_COLABORADOR };
         }
 
         function getFolios() {
             return JSON.parse(localStorage.getItem('gimtrac_folios')) || [];
+        }
+
+        function navigateTo(screen) {
+            currentScreen = screen;
+            renderScreen();
         }
 
         function renderScreen() {
@@ -420,72 +327,80 @@
 
         function renderAccessScreen() {
             return `
-                <div class="flex-1 flex flex-col justify-between p-5 watermark relative">
+                <div class="flex-1 flex flex-col justify-between p-6 sm:p-10 watermark relative min-h-[500px]">
                     <div class="watermark-text">GIMTRAC</div>
 
-                    <!-- Top Branding -->
+                    <!-- Logotipo superior -->
                     <div class="text-center pt-2">
-                        <div class="inline-block bg-white px-4 py-1.5 rounded-2xl shadow-sm border border-slate-100 mb-2">
-                            <span class="font-black text-xl tracking-wider text-gimtrac-green">GIMTRAC<span class="text-xs align-super font-normal">®</span></span>
-                            <div class="text-[9px] text-slate-500 font-medium -mt-1">Soluciones de Agricultura</div>
+                        <div class="inline-block bg-slate-50 px-5 py-2 rounded-2xl border border-slate-200/80 mb-2 shadow-sm">
+                            <span class="font-black text-2xl tracking-wider text-gimtrac-green">GIMTRAC<span class="text-xs align-super font-normal">®</span></span>
+                            <div class="text-[10px] text-slate-500 font-semibold tracking-wide -mt-1 uppercase">Soluciones de Agricultura</div>
                         </div>
                     </div>
 
-                    <!-- Title Section -->
-                    <div class="text-center my-auto py-2">
-                        <h2 class="text-xl font-extrabold text-slate-900 tracking-tight leading-tight">
-                            MEJORA CONTINUA<br><span class="text-gimtrac-green">GIMTRAC</span>
+                    <!-- Título -->
+                    <div class="text-center my-6">
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                            SISTEMA DE MEJORA CONTINUA<br><span class="text-gimtrac-green">GIMTRAC</span>
                         </h2>
-                        <p class="text-xs text-slate-500 mt-2 font-medium">
-                            Tu opinión nos ayuda a mejorar.<br>¿Quién eres?
+                        <p class="text-xs sm:text-sm text-slate-600 mt-2 font-medium max-w-md mx-auto">
+                            Tu opinión impulsa nuestro crecimiento. Selecciona tu perfil para ingresar.
                         </p>
                     </div>
 
-                    <!-- Profile Selector Options -->
-                    <div class="space-y-3.5 my-auto">
-                        <!-- Option 1: Soy cliente -->
-                        <button onclick="navigateTo('cliente')" class="w-full bg-white hover:bg-slate-50 border-2 border-slate-200 hover:border-gimtrac-green p-3.5 rounded-2xl text-left transition shadow-sm group relative overflow-hidden">
-                            <div class="flex items-center gap-3.5">
-                                <div class="w-11 h-11 rounded-xl bg-emerald-50 text-gimtrac-green flex items-center justify-center text-xl group-hover:scale-105 transition shrink-0">
+                    <!-- Selector de perfil -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-auto max-w-3xl mx-auto w-full">
+                        <!-- Perfil Cliente -->
+                        <button onclick="navigateTo('cliente')" class="bg-white hover:bg-emerald-50/50 border-2 border-slate-200 hover:border-gimtrac-green p-5 rounded-2xl text-left transition shadow-sm hover:shadow-md group relative overflow-hidden flex flex-col justify-between">
+                            <div class="flex items-center gap-4 mb-3">
+                                <div class="w-12 h-12 rounded-xl bg-emerald-50 text-gimtrac-green flex items-center justify-center text-2xl group-hover:scale-110 transition shrink-0">
                                     <i class="fa-solid fa-user"></i>
                                 </div>
-                                <div class="flex-1">
-                                    <div class="font-extrabold text-slate-800 text-base group-hover:text-gimtrac-green transition">Soy cliente</div>
-                                    <div class="text-[11px] text-slate-500">Acceso a encuesta/sugerencia de cliente.</div>
+                                <div>
+                                    <div class="font-extrabold text-slate-800 text-lg group-hover:text-gimtrac-green transition">Soy cliente</div>
+                                    <div class="text-xs text-slate-500">Encuestas y sugerencias de servicio externo.</div>
                                 </div>
                             </div>
+                            <span class="text-xs font-bold text-gimtrac-green flex items-center gap-1 mt-2">
+                                Ingresar <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                            </span>
                         </button>
 
-                        <!-- Option 2: Soy colaborador -->
-                        <button onclick="navigateTo('colaborador')" class="w-full bg-white hover:bg-slate-50 border-2 border-slate-200 hover:border-gimtrac-green p-3.5 rounded-2xl text-left transition shadow-sm group relative overflow-hidden">
-                            <div class="flex items-center gap-3.5">
-                                <div class="w-11 h-11 rounded-xl bg-emerald-50 text-gimtrac-green flex items-center justify-center text-xl group-hover:scale-105 transition shrink-0">
+                        <!-- Perfil Colaborador -->
+                        <button onclick="navigateTo('colaborador')" class="bg-white hover:bg-emerald-50/50 border-2 border-slate-200 hover:border-gimtrac-green p-5 rounded-2xl text-left transition shadow-sm hover:shadow-md group relative overflow-hidden flex flex-col justify-between">
+                            <div class="flex items-center gap-4 mb-3">
+                                <div class="w-12 h-12 rounded-xl bg-emerald-50 text-gimtrac-green flex items-center justify-center text-2xl group-hover:scale-110 transition shrink-0">
                                     <i class="fa-solid fa-hard-hat"></i>
                                 </div>
-                                <div class="flex-1">
-                                    <div class="font-extrabold text-slate-800 text-base group-hover:text-gimtrac-green transition">Soy colaborador</div>
-                                    <div class="text-[11px] text-slate-500">Acceso a encuesta/sugerencia interna.</div>
+                                <div>
+                                    <div class="font-extrabold text-slate-800 text-lg group-hover:text-gimtrac-green transition">Soy colaborador</div>
+                                    <div class="text-xs text-slate-500">Propuestas de mejora interna y procesos.</div>
                                 </div>
                             </div>
+                            <span class="text-xs font-bold text-gimtrac-green flex items-center gap-1 mt-2">
+                                Ingresar <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                            </span>
                         </button>
 
-                        <!-- Option 3: Acceso de Administrador -->
-                        <button onclick="navigateTo('admin')" class="w-full bg-slate-900 hover:bg-slate-800 text-white p-3.5 rounded-2xl text-left transition shadow-md group relative">
-                            <div class="flex items-center gap-3.5">
-                                <div class="w-11 h-11 rounded-xl bg-white/10 text-emerald-400 flex items-center justify-center text-xl group-hover:scale-105 transition shrink-0">
+                        <!-- Perfil Admin (Mismo estilo que cliente y colaborador) -->
+                        <button onclick="navigateTo('admin')" class="bg-white hover:bg-emerald-50/50 border-2 border-slate-200 hover:border-gimtrac-green p-5 rounded-2xl text-left transition shadow-sm hover:shadow-md group relative overflow-hidden flex flex-col justify-between">
+                            <div class="flex items-center gap-4 mb-3">
+                                <div class="w-12 h-12 rounded-xl bg-emerald-50 text-gimtrac-green flex items-center justify-center text-2xl group-hover:scale-110 transition shrink-0">
                                     <i class="fa-solid fa-key"></i>
                                 </div>
-                                <div class="flex-1">
-                                    <div class="font-extrabold text-white text-base">Acceso de Administrador</div>
-                                    <div class="text-[10px] text-slate-300">Ingreso con credenciales para administración y seguimiento.</div>
+                                <div>
+                                    <div class="font-extrabold text-slate-800 text-lg group-hover:text-gimtrac-green transition">Administrador</div>
+                                    <div class="text-xs text-slate-500">Gestión de folios y retroalimentación.</div>
                                 </div>
                             </div>
+                            <span class="text-xs font-bold text-gimtrac-green flex items-center gap-1 mt-2">
+                                Ingresar <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                            </span>
                         </button>
                     </div>
 
-                    <!-- Footer -->
-                    <div class="text-center text-[10px] text-slate-400 pt-3">
-                        GIMTRAC - Sistema de Control V2.6
+                    <div class="text-center text-xs text-slate-400 pt-6">
+                        GIMTRAC - Sistema de Control v2.6
                     </div>
                 </div>
             `;
@@ -493,56 +408,48 @@
 
         function renderClienteScreen() {
             return `
-                <div class="flex-1 flex flex-col justify-between p-4 watermark relative">
+                <div class="flex-1 flex flex-col justify-between p-6 sm:p-8 watermark relative min-h-[500px]">
                     <div class="watermark-text">CLIENTE</div>
 
-                    <!-- Header -->
                     <div>
-                        <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-3">
-                            <button onclick="navigateTo('access')" class="text-slate-500 hover:text-slate-800 p-1 flex items-center gap-1 text-xs font-semibold">
-                                <i class="fa-solid fa-bars text-sm"></i>
+                        <div class="flex items-center justify-between pb-4 border-b border-slate-200 mb-6">
+                            <button onclick="navigateTo('access')" class="text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 flex items-center gap-2 text-xs font-semibold transition">
+                                <i class="fa-solid fa-arrow-left"></i> Cambiar Perfil
                             </button>
                             
                             <div class="text-center">
-                                <div class="font-black text-base text-gimtrac-green leading-none">GIMTRAC<span class="text-[9px] align-super font-normal">®</span></div>
-                                <div class="text-[9px] text-slate-500">Soluciones de Agricultura</div>
+                                <div class="font-black text-lg text-gimtrac-green leading-none">GIMTRAC<span class="text-[9px] align-super font-normal">®</span></div>
+                                <div class="text-[10px] text-slate-500">Soluciones de Agricultura</div>
                             </div>
-
-                            <button onclick="navigateTo('access')" class="text-slate-600 hover:text-slate-900 text-base p-1">
-                                <i class="fa-solid fa-user-circle"></i>
-                            </button>
                         </div>
 
-                        <div class="text-center pt-2">
-                            <h3 class="font-bold text-slate-800 text-base">GIMTRAC - Perfil Cliente</h3>
+                        <div class="text-center mb-8">
+                            <h3 class="font-extrabold text-slate-900 text-xl sm:text-2xl">Atención a Clientes GIMTRAC</h3>
+                            <p class="text-xs sm:text-sm text-slate-500 mt-1">Selecciona la acción que deseas realizar hoy.</p>
                         </div>
                     </div>
 
-                    <!-- Action Cards -->
-                    <div class="grid grid-cols-2 gap-3 my-auto">
-                        
-                        <!-- Card 1: Enviar sugerencia -->
-                        <button onclick="openFormUrl('cliente')" class="bg-white hover:bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-md hover:shadow-lg transition group aspect-square">
-                            <div class="w-14 h-14 rounded-2xl border border-slate-300 flex items-center justify-center text-slate-700 group-hover:border-gimtrac-green group-hover:text-gimtrac-green transition mb-2 bg-slate-50">
-                                <i class="fa-regular fa-pen-to-square text-2xl"></i>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 my-auto max-w-2xl mx-auto w-full">
+                        <button onclick="openFormUrl('cliente')" class="bg-white hover:bg-emerald-50/40 border-2 border-slate-200 hover:border-gimtrac-green rounded-3xl p-6 flex flex-col items-center justify-center text-center shadow-sm hover:shadow-md transition group">
+                            <div class="w-16 h-16 rounded-2xl border border-slate-200 flex items-center justify-center text-slate-700 group-hover:border-gimtrac-green group-hover:text-gimtrac-green transition mb-3 bg-slate-50 group-hover:bg-white text-2xl">
+                                <i class="fa-regular fa-pen-to-square"></i>
                             </div>
-                            <span class="font-bold text-slate-800 text-xs group-hover:text-gimtrac-green leading-tight">Enviar sugerencia</span>
+                            <span class="font-extrabold text-slate-800 text-base group-hover:text-gimtrac-green mb-1">Enviar sugerencia</span>
+                            <span class="text-xs text-slate-500">Llena la encuesta en Google Forms</span>
                         </button>
 
-                        <!-- Card 2: Consultar estado -->
-                        <button onclick="openConsultarFolioModal()" class="bg-white hover:bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-md hover:shadow-lg transition group aspect-square">
-                            <div class="w-14 h-14 rounded-2xl border border-slate-300 flex items-center justify-center text-slate-700 group-hover:border-gimtrac-green group-hover:text-gimtrac-green transition mb-2 bg-slate-50">
-                                <i class="fa-solid fa-magnifying-glass text-2xl"></i>
+                        <button onclick="openConsultarFolioModal()" class="bg-white hover:bg-emerald-50/40 border-2 border-slate-200 hover:border-gimtrac-green rounded-3xl p-6 flex flex-col items-center justify-center text-center shadow-sm hover:shadow-md transition group">
+                            <div class="w-16 h-16 rounded-2xl border border-slate-200 flex items-center justify-center text-slate-700 group-hover:border-gimtrac-green group-hover:text-gimtrac-green transition mb-3 bg-slate-50 group-hover:bg-white text-2xl">
+                                <i class="fa-solid fa-magnifying-glass"></i>
                             </div>
-                            <span class="font-bold text-slate-800 text-xs group-hover:text-gimtrac-green leading-tight">Consultar estado</span>
+                            <span class="font-extrabold text-slate-800 text-base group-hover:text-gimtrac-green mb-1">Consultar estado</span>
+                            <span class="text-xs text-slate-500">Revisa los avances con tu folio</span>
                         </button>
-
                     </div>
 
-                    <!-- Bottom Note -->
-                    <div class="text-center pb-2">
-                        <span class="text-xs text-slate-600 font-medium bg-slate-200/70 px-3 py-1 rounded-full">
-                            No es necesario crear cuenta.
+                    <div class="text-center pt-6">
+                        <span class="text-xs text-slate-600 font-medium bg-slate-100 px-4 py-2 rounded-full border border-slate-200">
+                            <i class="fa-solid fa-shield-halved text-gimtrac-green mr-1"></i> Tu experiencia no requiere registro de usuario.
                         </span>
                     </div>
                 </div>
@@ -551,57 +458,48 @@
 
         function renderColaboradorScreen() {
             return `
-                <div class="flex-1 flex flex-col justify-between p-4 watermark relative">
+                <div class="flex-1 flex flex-col justify-between p-6 sm:p-8 watermark relative min-h-[500px]">
                     <div class="watermark-text">COLABORADOR</div>
 
-                    <!-- Header -->
                     <div>
-                        <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-3">
-                            <button onclick="navigateTo('access')" class="text-slate-500 hover:text-slate-800 p-1 flex items-center gap-1 text-xs font-semibold">
-                                <i class="fa-solid fa-bars text-sm"></i>
+                        <div class="flex items-center justify-between pb-4 border-b border-slate-200 mb-6">
+                            <button onclick="navigateTo('access')" class="text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 flex items-center gap-2 text-xs font-semibold transition">
+                                <i class="fa-solid fa-arrow-left"></i> Cambiar Perfil
                             </button>
                             
                             <div class="text-center">
-                                <div class="font-black text-base text-gimtrac-green leading-none">GIMTRAC<span class="text-[9px] align-super font-normal">®</span></div>
-                                <div class="text-[9px] text-slate-500">Soluciones de Agricultura</div>
+                                <div class="font-black text-lg text-gimtrac-green leading-none">GIMTRAC<span class="text-[9px] align-super font-normal">®</span></div>
+                                <div class="text-[10px] text-slate-500">Soluciones de Agricultura</div>
                             </div>
-
-                            <button onclick="navigateTo('access')" class="text-slate-600 hover:text-slate-900 text-base p-1">
-                                <i class="fa-solid fa-user-circle"></i>
-                            </button>
                         </div>
 
-                        <div class="text-center pt-1">
-                            <h3 class="font-bold text-slate-800 text-base">GIMTRAC - Perfil Colaborador</h3>
-                            <p class="text-xs text-slate-500 font-medium mt-0.5">Solo identifícate al enviar.</p>
+                        <div class="text-center mb-8">
+                            <h3 class="font-extrabold text-slate-900 text-xl sm:text-2xl">Portal del Colaborador</h3>
+                            <p class="text-xs sm:text-sm text-slate-500 mt-1">Envía tus propuestas de mejora o consulta tus folios registrados.</p>
                         </div>
                     </div>
 
-                    <!-- Action Cards -->
-                    <div class="grid grid-cols-2 gap-3 my-auto">
-                        
-                        <!-- Card 1: Enviar sugerencia -->
-                        <button onclick="openFormUrl('colaborador')" class="bg-white hover:bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-md hover:shadow-lg transition group aspect-square">
-                            <div class="w-14 h-14 rounded-2xl border border-slate-300 flex items-center justify-center text-slate-700 group-hover:border-gimtrac-green group-hover:text-gimtrac-green transition mb-2 bg-slate-50">
-                                <i class="fa-regular fa-pen-to-square text-2xl"></i>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 my-auto max-w-2xl mx-auto w-full">
+                        <button onclick="openFormUrl('colaborador')" class="bg-white hover:bg-emerald-50/40 border-2 border-slate-200 hover:border-gimtrac-green rounded-3xl p-6 flex flex-col items-center justify-center text-center shadow-sm hover:shadow-md transition group">
+                            <div class="w-16 h-16 rounded-2xl border border-slate-200 flex items-center justify-center text-slate-700 group-hover:border-gimtrac-green group-hover:text-gimtrac-green transition mb-3 bg-slate-50 group-hover:bg-white text-2xl">
+                                <i class="fa-regular fa-pen-to-square"></i>
                             </div>
-                            <span class="font-bold text-slate-800 text-xs group-hover:text-gimtrac-green leading-tight">Enviar sugerencia</span>
+                            <span class="font-extrabold text-slate-800 text-base group-hover:text-gimtrac-green mb-1">Enviar propuesta</span>
+                            <span class="text-xs text-slate-500">Formulario interno de sugerencias</span>
                         </button>
 
-                        <!-- Card 2: Consultar estado -->
-                        <button onclick="openConsultarFolioModal()" class="bg-white hover:bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-md hover:shadow-lg transition group aspect-square">
-                            <div class="w-14 h-14 rounded-2xl border border-slate-300 flex items-center justify-center text-slate-700 group-hover:border-gimtrac-green group-hover:text-gimtrac-green transition mb-2 bg-slate-50">
-                                <i class="fa-solid fa-magnifying-glass text-2xl"></i>
+                        <button onclick="openConsultarFolioModal()" class="bg-white hover:bg-emerald-50/40 border-2 border-slate-200 hover:border-gimtrac-green rounded-3xl p-6 flex flex-col items-center justify-center text-center shadow-sm hover:shadow-md transition group">
+                            <div class="w-16 h-16 rounded-2xl border border-slate-200 flex items-center justify-center text-slate-700 group-hover:border-gimtrac-green group-hover:text-gimtrac-green transition mb-3 bg-slate-50 group-hover:bg-white text-2xl">
+                                <i class="fa-solid fa-magnifying-glass"></i>
                             </div>
-                            <span class="font-bold text-slate-800 text-xs group-hover:text-gimtrac-green leading-tight">Consultar estado</span>
+                            <span class="font-extrabold text-slate-800 text-base group-hover:text-gimtrac-green mb-1">Consultar estado</span>
+                            <span class="text-xs text-slate-500">Estatus de tus folios ingresados</span>
                         </button>
-
                     </div>
 
-                    <!-- Bottom Note -->
-                    <div class="text-center pb-2">
-                        <span class="text-xs text-slate-600 font-medium bg-slate-200/70 px-3 py-1 rounded-full">
-                            Solo identifícate al enviar.
+                    <div class="text-center pt-6">
+                        <span class="text-xs text-slate-600 font-medium bg-slate-100 px-4 py-2 rounded-full border border-slate-200">
+                            <i class="fa-solid fa-user-check text-gimtrac-green mr-1"></i> Identificación mediante número o correo corporativo.
                         </span>
                     </div>
                 </div>
@@ -611,172 +509,176 @@
         function renderAdminScreen() {
             if (!isAdminLoggedIn) {
                 return `
-                    <div class="flex-1 flex flex-col justify-center p-5 watermark relative">
+                    <div class="flex-1 flex flex-col justify-center items-center p-6 sm:p-10 watermark relative">
                         <div class="watermark-text">ADMIN</div>
-
-                        <button onclick="navigateTo('access')" class="absolute top-4 left-4 text-slate-500 hover:text-slate-800 text-xs font-semibold flex items-center gap-1">
-                            <i class="fa-solid fa-arrow-left"></i> Volver
-                        </button>
-
-                        <div class="bg-white p-6 rounded-3xl shadow-xl border border-slate-100 max-w-xs mx-auto w-full">
-                            <div class="text-center mb-5">
-                                <div class="w-12 h-12 rounded-2xl bg-slate-900 text-emerald-400 flex items-center justify-center text-xl mx-auto mb-2">
+                        <div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 max-w-sm w-full shadow-lg relative z-10">
+                            <div class="text-center mb-6">
+                                <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-gimtrac-green flex items-center justify-center text-xl mx-auto mb-3">
                                     <i class="fa-solid fa-lock"></i>
                                 </div>
-                                <h3 class="font-extrabold text-slate-800 text-base">Panel Administrador</h3>
-                                <p class="text-[11px] text-slate-400">Ingresa con tus credenciales de acceso</p>
+                                <h3 class="font-extrabold text-slate-900 text-lg">Acceso Administrador</h3>
+                                <p class="text-xs text-slate-500">Ingresa tus credenciales del comité</p>
                             </div>
 
-                            <form onsubmit="handleAdminLogin(event)" class="space-y-3">
+                            <form onsubmit="handleAdminLogin(event)" class="space-y-4 text-xs">
                                 <div>
-                                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Usuario:</label>
-                                    <input type="text" id="admin-user" value="admin" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-gimtrac-green focus:outline-none">
+                                    <label class="block font-bold text-slate-700 mb-1">Usuario:</label>
+                                    <input type="text" id="admin-user" value="admin" required class="w-full border border-slate-300 rounded-xl p-2.5 font-medium text-slate-800 focus:ring-2 focus:ring-gimtrac-green focus:outline-none">
                                 </div>
                                 <div>
-                                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Contraseña:</label>
-                                    <input type="password" id="admin-pass" value="admin123" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-gimtrac-green focus:outline-none">
+                                    <label class="block font-bold text-slate-700 mb-1">Contraseña:</label>
+                                    <input type="password" id="admin-pass" value="1234" required class="w-full border border-slate-300 rounded-xl p-2.5 font-medium text-slate-800 focus:ring-2 focus:ring-gimtrac-green focus:outline-none">
                                 </div>
-
-                                <div id="admin-login-error" class="hidden text-[11px] text-rose-600 font-bold text-center pt-1">
-                                    Usuario o contraseña incorrectos.
-                                </div>
-
-                                <button type="submit" class="w-full bg-gimtrac-green hover:bg-gimtrac-darkgreen text-white font-bold py-2.5 rounded-xl text-xs transition shadow-md mt-2">
-                                    Iniciar Sesión
+                                <button type="submit" class="w-full bg-gimtrac-green hover:bg-gimtrac-darkgreen text-white py-3 rounded-xl font-bold transition shadow text-xs">
+                                    Ingresar al Panel
                                 </button>
                             </form>
 
-                            <p class="text-[10px] text-center text-slate-400 mt-4">
-                                Credenciales demo: <b>admin</b> / <b>admin123</b>
-                            </p>
+                            <div class="mt-4 text-center">
+                                <button onclick="navigateTo('access')" class="text-xs text-slate-500 hover:text-slate-800 font-medium">
+                                    <i class="fa-solid fa-arrow-left"></i> Volver a la pantalla principal
+                                </button>
+                            </div>
                         </div>
                     </div>
                 `;
             }
 
-            // Admin Dashboard
             const folios = getFolios();
-            
+            const total = folios.length;
+            const revision = folios.filter(f => f.estatus === 'En Revisión' || f.estatus === 'Recibida').length;
+            const proceso = folios.filter(f => f.estatus === 'En Proceso').length;
+            const resueltas = folios.filter(f => f.estatus === 'Resuelta').length;
+
             return `
-                <div class="flex-1 flex flex-col p-4 bg-slate-50 overflow-y-auto">
-                    <!-- Top Bar -->
-                    <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-3 shrink-0">
-                        <div class="flex items-center gap-2">
-                            <span class="bg-gimtrac-green text-white text-[10px] font-bold px-2 py-0.5 rounded-md">ADMIN</span>
-                            <span class="font-bold text-slate-800 text-xs">Gestión de Folios</span>
+                <div class="flex-1 flex flex-col p-4 sm:p-6 bg-slate-50/50 min-h-[550px]">
+                    <!-- Admin Header -->
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-4 border-b border-slate-200 gap-3">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="bg-gimtrac-green text-white font-extrabold text-[10px] px-2 py-0.5 rounded-md">ADMIN</span>
+                                <h3 class="font-extrabold text-slate-900 text-lg sm:text-xl">Panel de Administración de Folios</h3>
+                            </div>
+                            <p class="text-xs text-slate-500">Gestión de sugerencias y actualización de estatus</p>
                         </div>
+
                         <div class="flex items-center gap-2">
-                            <button onclick="openFormUrlModal()" class="text-slate-600 hover:text-gimtrac-green text-xs font-semibold flex items-center gap-1 bg-white px-2 py-1 rounded-lg border border-slate-200">
-                                <i class="fa-solid fa-gear"></i> URLs Forms
+                            <button onclick="navigateTo('access')" class="bg-white hover:bg-slate-100 text-slate-700 px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold transition">
+                                <i class="fa-solid fa-house"></i> Inicio
                             </button>
-                            <button onclick="adminLogout()" class="text-rose-600 hover:text-rose-800 text-xs font-bold bg-rose-50 px-2 py-1 rounded-lg border border-rose-100">
+                            <button onclick="adminLogout()" class="bg-rose-50 hover:bg-rose-100 text-rose-600 px-3 py-1.5 rounded-xl border border-rose-200 text-xs font-semibold transition">
                                 <i class="fa-solid fa-right-from-bracket"></i> Salir
                             </button>
                         </div>
                     </div>
 
-                    <!-- Statistics Summary Cards -->
-                    <div class="grid grid-cols-3 gap-2 mb-3 shrink-0">
-                        <div class="bg-white p-2 rounded-xl border border-slate-200 text-center">
-                            <span class="text-[10px] text-slate-400 font-semibold block">Total</span>
-                            <span class="text-sm font-black text-slate-800">${folios.length}</span>
+                    <!-- Métricas resumidas -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 my-4">
+                        <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm">
+                            <div class="text-[10px] font-bold text-slate-400 uppercase">Total Folios</div>
+                            <div class="text-xl font-extrabold text-slate-800">${total}</div>
                         </div>
-                        <div class="bg-white p-2 rounded-xl border border-slate-200 text-center">
-                            <span class="text-[10px] text-amber-600 font-semibold block">En Proceso</span>
-                            <span class="text-sm font-black text-amber-600">${folios.filter(f => f.estatus === 'En Proceso' || f.estatus === 'En Revisión').length}</span>
+                        <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm">
+                            <div class="text-[10px] font-bold text-amber-500 uppercase">En Revisión</div>
+                            <div class="text-xl font-extrabold text-amber-600">${revision}</div>
                         </div>
-                        <div class="bg-white p-2 rounded-xl border border-slate-200 text-center">
-                            <span class="text-[10px] text-emerald-600 font-semibold block">Resueltas</span>
-                            <span class="text-sm font-black text-emerald-600">${folios.filter(f => f.estatus === 'Resuelta').length}</span>
+                        <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm">
+                            <div class="text-[10px] font-bold text-blue-500 uppercase">En Proceso</div>
+                            <div class="text-xl font-extrabold text-blue-600">${proceso}</div>
+                        </div>
+                        <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm">
+                            <div class="text-[10px] font-bold text-emerald-500 uppercase">Resueltas</div>
+                            <div class="text-xl font-extrabold text-emerald-600">${resueltas}</div>
                         </div>
                     </div>
 
-                    <!-- List of Proposal Cards -->
-                    <div class="space-y-2.5 flex-1">
-                        ${folios.map(item => `
-                            <div class="bg-white rounded-2xl p-3 border border-slate-200 shadow-sm flex flex-col justify-between gap-2 text-xs">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-2">
-                                        <span class="font-extrabold text-slate-900 bg-slate-100 px-2 py-0.5 rounded-md font-mono">${item.folio}</span>
-                                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${item.tipo === 'Cliente' ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-purple-50 text-purple-700 border border-purple-200'}">
-                                            ${item.tipo}
-                                        </span>
-                                    </div>
-                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${getStatusBadgeClass(item.estatus)}">
-                                        ${item.estatus}
-                                    </span>
-                                </div>
-
-                                <p class="text-slate-700 font-medium text-[11px] line-clamp-2">
-                                    "${item.titulo}"
-                                </p>
-
-                                <div class="flex items-center justify-between pt-1 border-t border-slate-100 text-[10px] text-slate-400">
-                                    <span><i class="fa-solid fa-location-dot text-slate-400"></i> ${item.sucursal}</span>
-                                    <span><i class="fa-regular fa-calendar"></i> ${item.fecha}</span>
-                                    <button onclick="openAdminEditModal('${item.folio}')" class="bg-gimtrac-green hover:bg-gimtrac-darkgreen text-white font-bold px-2.5 py-1 rounded-lg transition flex items-center gap-1 text-[10px]">
-                                        <i class="fa-solid fa-pen"></i> Editar
-                                    </button>
-                                </div>
-                            </div>
-                        `).join('')}
+                    <!-- Tabla de Folios -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex-1 flex flex-col">
+                        <div class="overflow-x-auto custom-scroll">
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead>
+                                    <tr class="bg-slate-100 border-b border-slate-200 font-bold text-slate-600">
+                                        <th class="p-3">Folio</th>
+                                        <th class="p-3">Tipo</th>
+                                        <th class="p-3">Sucursal</th>
+                                        <th class="p-3">Sugerencia</th>
+                                        <th class="p-3">Estatus</th>
+                                        <th class="p-3 text-right">Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    ${folios.map(f => `
+                                        <tr class="hover:bg-slate-50 transition">
+                                            <td class="p-3 font-bold text-slate-800">${f.folio}</td>
+                                            <td class="p-3">
+                                                <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold ${f.tipo === 'Cliente' ? 'bg-purple-50 text-purple-700' : 'bg-blue-50 text-blue-700'}">
+                                                    ${f.tipo}
+                                                </span>
+                                            </td>
+                                            <td class="p-3 text-slate-600">${f.sucursal}</td>
+                                            <td class="p-3 text-slate-700 font-medium max-w-xs truncate">${f.titulo}</td>
+                                            <td class="p-3">${getStatusBadge(f.estatus)}</td>
+                                            <td class="p-3 text-right">
+                                                <button onclick="openAdminEditModal('${f.folio}')" class="bg-emerald-50 hover:bg-emerald-100 text-gimtrac-green px-2.5 py-1 rounded-lg font-bold text-[11px] border border-emerald-200 transition">
+                                                    <i class="fa-solid fa-pen"></i> Editar
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-
                 </div>
             `;
         }
 
-        function getStatusBadgeClass(status) {
-            switch (status) {
-                case 'Recibida': return 'bg-slate-100 text-slate-700 border border-slate-200';
-                case 'En Revisión': return 'bg-amber-50 text-amber-700 border border-amber-200';
-                case 'En Proceso': return 'bg-blue-50 text-blue-700 border border-blue-200';
-                case 'Resuelta': return 'bg-emerald-50 text-emerald-700 border border-emerald-200';
-                default: return 'bg-slate-100 text-slate-700';
+        function getStatusBadge(status) {
+            switch(status) {
+                case 'Recibida': return `<span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full text-[10px] font-bold">📥 Recibida</span>`;
+                case 'En Revisión': return `<span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full text-[10px] font-bold">🔍 En Revisión</span>`;
+                case 'En Proceso': return `<span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-[10px] font-bold">⚙️ En Proceso</span>`;
+                case 'Resuelta': return `<span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full text-[10px] font-bold">✅ Resuelta</span>`;
+                default: return status;
             }
         }
 
-        function navigateTo(screen) {
-            currentScreen = screen;
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            isAdminLoggedIn = true;
             renderScreen();
         }
 
-        function openFormUrl(profileType) {
-            const urls = getUrls();
-            const targetUrl = urls[profileType];
-
-            if (targetUrl && targetUrl.startsWith('http')) {
-                window.open(targetUrl, '_blank');
-            } else {
-                openFormUrlModal();
-            }
+        function adminLogout() {
+            isAdminLoggedIn = false;
+            renderScreen();
         }
 
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.add('hidden');
+        function openFormUrl(type) {
+            const urls = getUrls();
+            const targetUrl = type === 'cliente' ? urls.cliente : urls.colaborador;
+            window.open(targetUrl, '_blank');
         }
 
         function openFormUrlModal() {
             const urls = getUrls();
-            document.getElementById('url-cliente-input').value = urls.cliente || '';
-            document.getElementById('url-colaborador-input').value = urls.colaborador || '';
+            document.getElementById('url-cliente-input').value = urls.cliente;
+            document.getElementById('url-colaborador-input').value = urls.colaborador;
             document.getElementById('modal-url-config').classList.remove('hidden');
         }
 
         function saveFormUrls() {
+            const clienteVal = document.getElementById('url-cliente-input').value.trim();
+            const colaboradorVal = document.getElementById('url-colaborador-input').value.trim();
+
             const newUrls = {
-                cliente: document.getElementById('url-cliente-input').value.trim() || LINK_GOOGLE_FORMS_CLIENTE,
-                colaborador: document.getElementById('url-colaborador-input').value.trim() || LINK_GOOGLE_FORMS_COLABORADOR
+                cliente: clienteVal || LINK_GOOGLE_FORMS_CLIENTE,
+                colaborador: colaboradorVal || LINK_GOOGLE_FORMS_COLABORADOR
             };
+
             localStorage.setItem('gimtrac_urls', JSON.stringify(newUrls));
             closeModal('modal-url-config');
-            
-            // Temporary feedback notification
-            const notification = document.createElement('div');
-            notification.className = 'fixed bottom-4 right-4 bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-xl z-50 animate-bounce';
-            notification.innerHTML = '<i class="fa-solid fa-circle-check mr-1"></i> Links guardados correctamente';
-            document.body.appendChild(notification);
-            setTimeout(() => notification.remove(), 3000);
+            alert('Enlaces actualizados correctamente.');
         }
 
         function openConsultarFolioModal() {
@@ -786,8 +688,8 @@
             document.getElementById('modal-consulta-folio').classList.remove('hidden');
         }
 
-        function setSearchDemo(code) {
-            document.getElementById('folio-search-input').value = code;
+        function setSearchDemo(folioCode) {
+            document.getElementById('folio-search-input').value = folioCode;
             executeFolioSearch();
         }
 
@@ -799,117 +701,75 @@
             if (!query) return;
 
             const folios = getFolios();
-            const match = folios.find(f => f.folio.toUpperCase() === query);
+            const found = folios.find(f => f.folio.toUpperCase() === query);
 
-            if (match) {
+            if (found) {
                 notFoundBox.classList.add('hidden');
-                
-                // Construct Stepper Progress
-                const steps = ['Recibida', 'En Revisión', 'En Proceso', 'Resuelta'];
-                const currentIndex = steps.indexOf(match.estatus);
-
-                let stepperHtml = `
-                    <div class="my-3 py-2 border-y border-slate-200">
-                        <div class="text-[10px] font-bold text-slate-500 mb-2">PROGRESO DEL SEGUIMIENTO:</div>
-                        <div class="flex items-center justify-between relative">
-                            <div class="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-1 bg-slate-200 z-0"></div>
-                            <div class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-gimtrac-green z-0 transition-all duration-500" style="width: ${Math.max(0, (currentIndex / (steps.length - 1)) * 100)}%"></div>
-                            
-                            ${steps.map((step, idx) => {
-                                const isDone = idx <= currentIndex;
-                                return `
-                                    <div class="relative z-10 flex flex-col items-center">
-                                        <div class="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${isDone ? 'bg-gimtrac-green text-white ring-4 ring-emerald-100' : 'bg-slate-200 text-slate-500'}">
-                                            ${isDone ? '<i class="fa-solid fa-check"></i>' : (idx + 1)}
-                                        </div>
-                                        <span class="text-[9px] mt-1 font-semibold ${isDone ? 'text-gimtrac-green font-bold' : 'text-slate-400'}">${step}</span>
-                                    </div>
-                                `;
-                            }).join('')}
-                        </div>
-                    </div>
-                `;
-
+                resultBox.classList.remove('hidden');
                 resultBox.innerHTML = `
                     <div class="space-y-2">
-                        <div class="flex justify-between items-center pb-2 border-b border-slate-200">
-                            <div>
-                                <span class="font-extrabold text-slate-900 text-sm font-mono">${match.folio}</span>
-                                <span class="ml-2 text-[10px] px-2 py-0.5 rounded-full font-bold ${match.tipo === 'Cliente' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'}">${match.tipo}</span>
-                            </div>
-                            <span class="font-bold px-2 py-0.5 rounded-full text-[10px] ${getStatusBadgeClass(match.estatus)}">${match.estatus}</span>
+                        <div class="flex justify-between items-center border-b border-slate-200 pb-2">
+                            <span class="font-bold text-slate-800">${found.folio} (${found.tipo})</span>
+                            ${getStatusBadge(found.estatus)}
                         </div>
-
                         <div>
-                            <span class="text-[10px] text-slate-400 block font-bold">PROPUESTA / SUGERENCIA:</span>
-                            <p class="font-semibold text-slate-800 text-xs mt-0.5">"${match.titulo}"</p>
+                            <span class="text-slate-400 text-[10px] font-bold block uppercase">Sugerencia:</span>
+                            <p class="font-medium text-slate-700">${found.titulo}</p>
                         </div>
-
-                        <div class="grid grid-cols-2 gap-2 text-[10px] text-slate-500 pt-1">
-                            <div><i class="fa-regular fa-calendar"></i> Fecha: <b class="text-slate-700">${match.fecha}</b></div>
-                            <div><i class="fa-solid fa-building"></i> Sucursal: <b class="text-slate-700">${match.sucursal}</b></div>
-                            <div class="col-span-2"><i class="fa-solid fa-tag"></i> Categoría: <b class="text-slate-700">${match.categoria}</b></div>
+                        <div class="bg-white p-2.5 rounded-xl border border-slate-200">
+                            <span class="text-gimtrac-green text-[10px] font-bold block uppercase"><i class="fa-solid fa-comment-dots mr-1"></i> Respuesta del Comité:</span>
+                            <p class="text-slate-600 mt-0.5">${found.respuesta || 'En espera de revisión.'}</p>
                         </div>
-
-                        ${stepperHtml}
-
-                        <div class="bg-emerald-50/80 border border-emerald-200 rounded-xl p-2.5 mt-2">
-                            <span class="text-[10px] font-extrabold text-gimtrac-darkgreen block mb-0.5"><i class="fa-solid fa-comment-dots"></i> RESPUESTA DEL COMITÉ:</span>
-                            <p class="text-[11px] text-slate-700 italic">${match.respuesta || 'En revisión por el equipo directivo.'}</p>
+                        <div>
+                            <div class="flex justify-between text-[10px] font-bold text-slate-500 mb-1">
+                                <span>Progreso</span>
+                                <span>${found.progreso}%</span>
+                            </div>
+                            <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                                <div class="bg-gimtrac-green h-full transition-all duration-500" style="width: ${found.progreso}%"></div>
+                            </div>
                         </div>
                     </div>
                 `;
-                resultBox.classList.remove('hidden');
             } else {
                 resultBox.classList.add('hidden');
                 notFoundBox.classList.remove('hidden');
             }
         }
 
-        function handleAdminLogin(e) {
-            e.preventDefault();
-            const u = document.getElementById('admin-user').value.trim();
-            const p = document.getElementById('admin-pass').value.trim();
-
-            if (u === 'admin' && p === 'admin123') {
-                isAdminLoggedIn = true;
-                renderScreen();
-            } else {
-                document.getElementById('admin-login-error').classList.remove('hidden');
-            }
-        }
-
-        function adminLogout() {
-            isAdminLoggedIn = false;
-            navigateTo('access');
-        }
-
         function openAdminEditModal(folioCode) {
             const folios = getFolios();
-            const target = folios.find(f => f.folio === folioCode);
-            if (!target) return;
+            const found = folios.find(f => f.folio === folioCode);
 
-            document.getElementById('edit-folio-id').value = target.folio;
-            document.getElementById('edit-folio-code').value = target.folio;
-            document.getElementById('edit-folio-title').value = target.titulo;
-            document.getElementById('edit-folio-status').value = target.estatus;
-            document.getElementById('edit-folio-response').value = target.respuesta || '';
-
-            document.getElementById('modal-admin-edit').classList.remove('hidden');
+            if (found) {
+                document.getElementById('edit-folio-id').value = found.folio;
+                document.getElementById('edit-folio-code').value = found.folio;
+                document.getElementById('edit-folio-title').value = found.titulo;
+                document.getElementById('edit-folio-status').value = found.estatus;
+                document.getElementById('edit-folio-response').value = found.respuesta || '';
+                document.getElementById('modal-admin-edit').classList.remove('hidden');
+            }
         }
 
         function saveAdminFolioUpdate() {
             const folioCode = document.getElementById('edit-folio-id').value;
             const newStatus = document.getElementById('edit-folio-status').value;
-            const newResponse = document.getElementById('edit-folio-response').value.trim();
+            const newResponse = document.getElementById('edit-folio-response').value;
 
             let folios = getFolios();
             folios = folios.map(f => {
                 if (f.folio === folioCode) {
+                    let prog = f.progreso;
+                    if (newStatus === 'Recibida') prog = 10;
+                    if (newStatus === 'En Revisión') prog = 33;
+                    if (newStatus === 'En Proceso') prog = 66;
+                    if (newStatus === 'Resuelta') prog = 100;
+
                     return {
                         ...f,
                         estatus: newStatus,
-                        respuesta: newResponse
+                        respuesta: newResponse,
+                        progreso: prog
                     };
                 }
                 return f;
@@ -920,45 +780,25 @@
             renderScreen();
         }
 
-        function toggleViewMode() {
-            const phoneFrame = document.getElementById('phone-frame');
-            const toggleText = document.getElementById('toggle-view-text');
-
-            if (isPhoneView) {
-                phoneFrame.classList.remove('phone-container');
-                phoneFrame.classList.add('w-full', 'max-w-4xl', 'h-[720px]', 'rounded-3xl', 'shadow-2xl', 'border-4', 'border-slate-800');
-                toggleText.innerText = "Vista Móvil";
-                isPhoneView = false;
-            } else {
-                phoneFrame.classList.remove('w-full', 'max-w-4xl', 'h-[720px]', 'border-4');
-                phoneFrame.classList.add('phone-container');
-                toggleText.innerText = "Vista Expandida";
-                isPhoneView = true;
-            }
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
         }
 
         function resetDemoData() {
-            localStorage.removeItem('gimtrac_urls');
-            localStorage.removeItem('gimtrac_folios');
-            initStorage();
-            renderScreen();
+            if (confirm('¿Deseas restablecer los datos de ejemplo y enlaces originales?')) {
+                localStorage.removeItem('gimtrac_folios');
+                localStorage.removeItem('gimtrac_urls');
+                initStorage();
+                renderScreen();
+                alert('Datos restablecidos correctamente.');
+            }
         }
 
-        function updateClock() {
-            const now = new Date();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const el = document.getElementById('current-time');
-            if (el) el.innerText = `${hours}:${minutes}`;
-        }
-
-        // On Load Initializer
-        window.onload = function() {
+        // Inicializar al cargar
+        window.addEventListener('DOMContentLoaded', () => {
             initStorage();
             renderScreen();
-            setInterval(updateClock, 10000);
-            updateClock();
-        };
+        });
     </script>
 </body>
 </html>
