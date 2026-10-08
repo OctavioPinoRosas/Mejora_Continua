@@ -213,6 +213,7 @@
 
     <!-- Lógica de Javascript -->
     <script>
+        // ENLACES CONFIGURADOS DIRECTAMENTE
         let LINK_GOOGLE_FORMS_CLIENTE = "https://docs.google.com/forms/d/e/1FAIpQLScrYCjz32ZVYrlSsUa6g27kkchR9d5OJ-r_p_xSodlIPYl9GA/viewform";
         let LINK_GOOGLE_FORMS_COLABORADOR = "https://docs.google.com/forms/d/e/1FAIpQLSfkkAwv265sY_mHbRHQsVsRWs0hM-LJOjGrLFZw0_9ysQN98A/viewform?usp=publish-editor";
 
@@ -220,13 +221,12 @@
         let isAdminLoggedIn = false;
 
         function initStorage() {
-            if (!localStorage.getItem('gimtrac_urls')) {
-                const defaultFormUrls = {
-                    cliente: LINK_GOOGLE_FORMS_CLIENTE,
-                    colaborador: LINK_GOOGLE_FORMS_COLABORADOR
-                };
-                localStorage.setItem('gimtrac_urls', JSON.stringify(defaultFormUrls));
-            }
+            // Se sobreescriben siempre los enlaces para garantizar que se apliquen los definidos en el código
+            const defaultFormUrls = {
+                cliente: LINK_GOOGLE_FORMS_CLIENTE,
+                colaborador: LINK_GOOGLE_FORMS_COLABORADOR
+            };
+            localStorage.setItem('gimtrac_urls', JSON.stringify(defaultFormUrls));
 
             if (!localStorage.getItem('gimtrac_folios')) {
                 const sampleFolios = [
@@ -382,7 +382,7 @@
                             </span>
                         </button>
 
-                        <!-- Perfil Admin (Mismo estilo que cliente y colaborador) -->
+                        <!-- Perfil Admin -->
                         <button onclick="navigateTo('admin')" class="bg-white hover:bg-emerald-50/50 border-2 border-slate-200 hover:border-gimtrac-green p-5 rounded-2xl text-left transition shadow-sm hover:shadow-md group relative overflow-hidden flex flex-col justify-between">
                             <div class="flex items-center gap-4 mb-3">
                                 <div class="w-12 h-12 rounded-xl bg-emerald-50 text-gimtrac-green flex items-center justify-center text-2xl group-hover:scale-110 transition shrink-0">
@@ -782,16 +782,6 @@
 
         function closeModal(modalId) {
             document.getElementById(modalId).classList.add('hidden');
-        }
-
-        function resetDemoData() {
-            if (confirm('¿Deseas restablecer los datos de ejemplo y enlaces originales?')) {
-                localStorage.removeItem('gimtrac_folios');
-                localStorage.removeItem('gimtrac_urls');
-                initStorage();
-                renderScreen();
-                alert('Datos restablecidos correctamente.');
-            }
         }
 
         // Inicializar al cargar
